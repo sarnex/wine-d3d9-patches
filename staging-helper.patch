@@ -1,0 +1,107 @@
+diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
+index 5068812..0e05a0d 100644
+--- a/dlls/ntdll/loadorder.c
++++ b/dlls/ntdll/loadorder.c
+@@ -633,8 +633,10 @@ WCHAR* get_redirect( const WCHAR *app_name, const WCHAR *path, BYTE *buffer, ULO
+         goto done;
+ 
+     /* then module basename without '*' (only if explicit path) */
++    /*
+     if (basename != module+1 && (ret = get_redirect_value( std_key, app_key, basename, buffer, size )))
+         goto done;
++    */
+ 
+     /* and last the hard-coded default */
+     ret = NULL;
+diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
+index b94e773..028dbb7 100644
+--- a/programs/winecfg/resource.h
++++ b/programs/winecfg/resource.h
+@@ -218,6 +218,7 @@
+ #define IDC_ENABLE_EAX                  9003
+ #define IDC_ENABLE_HIDEWINE             9004
+ #define IDC_ENABLE_GTK3                 9005
++#define IDC_ENABLE_NATIVE_D3D9          9006
+ 
+ /* About tab */
+ #define IDC_ABT_OWNER                8432
+diff --git a/programs/winecfg/staging.c b/programs/winecfg/staging.c
+index 81a4e24..29c5a3f 100644
+--- a/programs/winecfg/staging.c
++++ b/programs/winecfg/staging.c
+@@ -125,6 +125,23 @@ static void gtk3_set(BOOL status)
+ #endif
+ }
+ 
++/*
++ * Gallium nine
++ */
++static BOOL nine_get(void)
++{
++    BOOL ret;
++    char *value = get_reg_key(config_key, keypath("DllRedirects"), "d3d9", NULL);
++    ret = (value && !strcmp(value, "d3d9-nine.dll"));
++    HeapFree(GetProcessHeap(), 0, value);
++    return ret;
++}
++
++static void nine_set(BOOL status)
++{
++    set_reg_key(config_key, keypath("DllRedirects"), "d3d9", status ? "d3d9-nine.dll" : NULL);
++}
++
+ static void load_staging_settings(HWND dialog)
+ {
+     CheckDlgButton(dialog, IDC_ENABLE_CSMT, csmt_get() ? BST_CHECKED : BST_UNCHECKED);
+@@ -132,6 +149,7 @@ static void load_staging_settings(HWND dialog)
+     CheckDlgButton(dialog, IDC_ENABLE_EAX, eax_get() ? BST_CHECKED : BST_UNCHECKED);
+     CheckDlgButton(dialog, IDC_ENABLE_HIDEWINE, hidewine_get() ? BST_CHECKED : BST_UNCHECKED);
+     CheckDlgButton(dialog, IDC_ENABLE_GTK3, gtk3_get() ? BST_CHECKED : BST_UNCHECKED);
++    CheckDlgButton(dialog, IDC_ENABLE_NATIVE_D3D9, nine_get() ? BST_CHECKED : BST_UNCHECKED);
+ 
+ #ifndef HAVE_VAAPI
+     disable(IDC_ENABLE_VAAPI);
+@@ -139,6 +157,9 @@ static void load_staging_settings(HWND dialog)
+ #ifndef HAVE_GTK3
+     disable(IDC_ENABLE_GTK3);
+ #endif
++#if !defined(SONAME_D3DADAPTER9)
++    disable(IDC_ENABLE_NATIVE_D3D9);
++#endif
+ }
+ 
+ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+@@ -166,6 +187,8 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
+         {
+         case IDC_ENABLE_CSMT:
+             csmt_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_CSMT) == BST_CHECKED);
++            nine_set(FALSE);
++            CheckDlgButton(hDlg, IDC_ENABLE_NATIVE_D3D9, BST_UNCHECKED);
+             SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
+             return TRUE;
+         case IDC_ENABLE_VAAPI:
+@@ -184,6 +207,12 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
+             gtk3_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_GTK3) == BST_CHECKED);
+             SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
+             return TRUE;
++        case IDC_ENABLE_NATIVE_D3D9:
++            nine_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_NATIVE_D3D9) == BST_CHECKED);
++            csmt_set(FALSE);
++            CheckDlgButton(hDlg, IDC_ENABLE_CSMT, BST_UNCHECKED);
++            SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
++            return TRUE;
+         }
+         break;
+     }
+diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
+index c375217..31cc9ba 100644
+--- a/programs/winecfg/winecfg.rc
++++ b/programs/winecfg/winecfg.rc
+@@ -320,6 +320,7 @@ BEGIN
+     CONTROL     "Enable Environmental Audio E&xtensions (EAX)",IDC_ENABLE_EAX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,70,230,8
+     CONTROL     "&Hide Wine version from applications",IDC_ENABLE_HIDEWINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,85,230,8
+     CONTROL     "Enable &GTK3 Theming",IDC_ENABLE_GTK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,100,230,8
++    CONTROL     "Enable Gallium &Nine for better D3D9 graphic performance",IDC_ENABLE_NATIVE_D3D9,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,115,230,8
+ END
+ 
+ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
