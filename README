@@ -1,0 +1,6 @@
+Use cases:
+a. Vanilla Wine
+  Apply d3d9-helper.patch and then d3d9.patch
+
+b. Wine Staging
+  Apply all of staging onto vanilla wine, then staging-helper.patch and then d3d9.patch
