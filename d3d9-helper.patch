@@ -822,3 +822,6 @@ index 72c3e1b..b9c0afc 100644
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
  
  /* @makedep: winecfg.ico */
+-- 
+2.8.2
+
