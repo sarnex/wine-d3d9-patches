@@ -1,3 +1,21 @@
+From 0f26bbc539a146eb98c7a07e8cc66032d30478e1 Mon Sep 17 00:00:00 2001
+From: Nick Sarnie <commendsarnex@gmail.com>
+Date: Wed, 18 May 2016 10:13:31 -0400
+Subject: [PATCH] Helper
+
+---
+ dlls/ntdll/loader.c          |  66 ++++++----
+ dlls/ntdll/loadorder.c       | 304 ++++++++++++++++++++++++++++++++-----------
+ dlls/ntdll/ntdll_misc.h      |   1 +
+ programs/winecfg/Makefile.in |   1 +
+ programs/winecfg/main.c      |  12 +-
+ programs/winecfg/resource.h  |   5 +
+ programs/winecfg/staging.c   |  93 +++++++++++++
+ programs/winecfg/winecfg.h   |   1 +
+ programs/winecfg/winecfg.rc  |  10 ++
+ 9 files changed, 394 insertions(+), 99 deletions(-)
+ create mode 100644 programs/winecfg/staging.c
+
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
 index a0049fe..000b108 100644
 --- a/dlls/ntdll/loader.c

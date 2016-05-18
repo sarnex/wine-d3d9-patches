@@ -1,5 +1,49 @@
+From 389872af999db298b43dd3f6df2d9c944bc24e4f Mon Sep 17 00:00:00 2001
+From: Nick Sarnie <commendsarnex@gmail.com>
+Date: Wed, 18 May 2016 10:11:03 -0400
+Subject: [PATCH 2/2] D3d9
+
+meme
+---
+ configure.ac                    |  194 ++++++
+ dlls/d3d9-nine/Makefile.in      |   14 +
+ dlls/d3d9-nine/d3d9-nine.spec   |   14 +
+ dlls/d3d9-nine/d3d9_main.c      |  164 +++++
+ dlls/d3d9-nine/d3dadapter9.c    |  874 +++++++++++++++++++++++++
+ dlls/d3d9-nine/d3dadapter9.h    |   30 +
+ dlls/d3d9-nine/device_wrap.c    |  502 +++++++++++++++
+ dlls/d3d9-nine/device_wrap.h    |   26 +
+ dlls/d3d9-nine/dri3.c           | 1358 +++++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/dri3.h           |  101 +++
+ dlls/d3d9-nine/libd3d9-nine.def |   16 +
+ dlls/d3d9-nine/present.c        | 1333 ++++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/present.h        |   38 ++
+ dlls/d3d9-nine/version.rc       |   26 +
+ dlls/d3d9-nine/wndproc.c        |  277 ++++++++
+ dlls/d3d9-nine/wndproc.h        |   41 ++
+ dlls/d3d9/Makefile.in           |    2 +-
+ dlls/winex11.drv/init.c         |    1 +
+ dlls/winex11.drv/x11drv.h       |    1 +
+ include/config.h.in             |   12 +
+ 20 files changed, 5023 insertions(+), 1 deletion(-)
+ create mode 100644 dlls/d3d9-nine/Makefile.in
+ create mode 100644 dlls/d3d9-nine/d3d9-nine.spec
+ create mode 100644 dlls/d3d9-nine/d3d9_main.c
+ create mode 100644 dlls/d3d9-nine/d3dadapter9.c
+ create mode 100644 dlls/d3d9-nine/d3dadapter9.h
+ create mode 100644 dlls/d3d9-nine/device_wrap.c
+ create mode 100644 dlls/d3d9-nine/device_wrap.h
+ create mode 100644 dlls/d3d9-nine/dri3.c
+ create mode 100644 dlls/d3d9-nine/dri3.h
+ create mode 100644 dlls/d3d9-nine/libd3d9-nine.def
+ create mode 100644 dlls/d3d9-nine/present.c
+ create mode 100644 dlls/d3d9-nine/present.h
+ create mode 100644 dlls/d3d9-nine/version.rc
+ create mode 100644 dlls/d3d9-nine/wndproc.c
+ create mode 100644 dlls/d3d9-nine/wndproc.h
+
 diff --git a/configure.ac b/configure.ac
-index fafc571..3a73500 100644
+index be1307d..0674c9c 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,8 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -216,7 +260,7 @@ index fafc571..3a73500 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2899,6 +3092,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2898,6 +3091,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -5165,7 +5209,7 @@ index 04e8577..8a313b0 100644
  
  struct x11drv_escape_flush_gl_drawable
 diff --git a/include/config.h.in b/include/config.h.in
-index b787fac..e15945e 100644
+index 1061240..c0d3073 100644
 --- a/include/config.h.in
 +++ b/include/config.h.in
 @@ -4,6 +4,12 @@
@@ -5181,7 +5225,7 @@ index b787fac..e15945e 100644
  /* Define to a function attribute for Microsoft hotpatch assembly prefix. */
  #undef DECLSPEC_HOTPATCH
  
-@@ -1394,6 +1400,9 @@
+@@ -1391,6 +1397,9 @@
  /* Define to the soname of the libcairo library. */
  #undef SONAME_LIBCAIRO
  
@@ -5191,7 +5235,7 @@ index b787fac..e15945e 100644
  /* Define to the soname of the libcapi20 library. */
  #undef SONAME_LIBCAPI20
  
-@@ -1406,6 +1415,9 @@
+@@ -1403,6 +1412,9 @@
  /* Define to the soname of the libdbus-1 library. */
  #undef SONAME_LIBDBUS_1
  
