@@ -1,8 +1,8 @@
-From 0f26bbc539a146eb98c7a07e8cc66032d30478e1 Mon Sep 17 00:00:00 2001
+From af351d62022c5a612c9f5c0b075df6024c494566 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 18 May 2016 10:13:31 -0400
-Subject: [PATCH] Helper
+Date: Mon, 30 May 2016 13:41:27 -0400
 
+Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
  dlls/ntdll/loader.c          |  66 ++++++----
  dlls/ntdll/loadorder.c       | 304 ++++++++++++++++++++++++++++++++-----------
@@ -841,5 +841,5 @@ index 72c3e1b..b9c0afc 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.8.2
+2.8.3
 

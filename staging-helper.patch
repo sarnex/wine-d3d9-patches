@@ -1,8 +1,8 @@
-From df3a4745b2c3fd2dd0a4fd41fa90cedaa8e03e9f Mon Sep 17 00:00:00 2001
+From be75a3df28b37c3a42f2a53e25de127de7809cc2 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 18 May 2016 10:10:39 -0400
-Subject: [PATCH 1/2] Helper
+Date: Mon, 30 May 2016 13:46:19 -0400
 
+Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
  dlls/ntdll/loadorder.c      |  2 ++
  programs/winecfg/resource.h |  1 +
@@ -118,5 +118,5 @@ index c375217..31cc9ba 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.8.2
+2.8.3
 
