@@ -1,8 +1,8 @@
-From 3a3032f257769cc932da0269cfb117d138afe7d1 Mon Sep 17 00:00:00 2001
+From 87af9f7d1e17e36d3e27667e568167671ffd0e24 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 30 May 2016 13:46:40 -0400
+Date: Mon, 13 Jun 2016 20:30:16 -0400
+Subject: Wine D3D9
 
-Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
  configure.ac                    |  194 ++++++
  dlls/d3d9-nine/Makefile.in      |   14 +
@@ -42,7 +42,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index b6abd77..aae7063 100644
+index fbd480e..e2b8e01 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,8 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -5245,5 +5245,5 @@ index 1061240..c0d3073 100644
  #undef SONAME_LIBFONTCONFIG
  
 -- 
-2.8.3
+2.8.4
 
