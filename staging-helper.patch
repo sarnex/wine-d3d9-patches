@@ -1,7 +1,7 @@
-From 1316ed67fa9ba03c2b7924e8829d01b0a7aa1efb Mon Sep 17 00:00:00 2001
+From 1040ecff0ba5e6556ca4616d316d877b1b870d6c Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 13 Jun 2016 20:29:46 -0400
-Subject: Staging Helper
+Date: Sun, 26 Jun 2016 10:50:50 -0400
+Subject: [PATCH 1/2] helper
 
 ---
  dlls/ntdll/loadorder.c      |  2 ++
@@ -118,5 +118,5 @@ index c375217..31cc9ba 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.8.4
+2.9.0
 

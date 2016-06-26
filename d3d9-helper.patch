@@ -1,7 +1,7 @@
-From 38b85e67d62e6fb8377d0a522331d3d905ef9b8f Mon Sep 17 00:00:00 2001
+From 11a67d5b741ee21e3c839d60ee160af359eb6960 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 13 Jun 2016 20:31:01 -0400
-Subject: [PATCH] D3D9 Helper
+Date: Sun, 26 Jun 2016 10:53:31 -0400
+Subject: [PATCH] d3d9 helper
 
 ---
  dlls/ntdll/loader.c          |  66 ++++++----
@@ -841,5 +841,5 @@ index 72c3e1b..b9c0afc 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.8.4
+2.9.0
 
