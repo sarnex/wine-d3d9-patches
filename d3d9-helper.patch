@@ -1,9 +1,8 @@
-From 4ed16f153c82faa77fe24ae10f5dbb4f604af725 Mon Sep 17 00:00:00 2001
+From 53d338513b3c1c20defbba228688cee260f054f3 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Tue, 12 Jul 2016 21:11:48 -0400
-Subject: D3D9-Helper
+Date: Sun, 24 Jul 2016 09:35:53 -0400
+Subject: [PATCH] d3d9 helper
 
-ww
 ---
  dlls/ntdll/loader.c          |  66 ++++++----
  dlls/ntdll/loadorder.c       | 304 ++++++++++++++++++++++++++++++++-----------
@@ -842,5 +841,5 @@ index 72c3e1b..b9c0afc 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.9.0
+2.9.2
 
