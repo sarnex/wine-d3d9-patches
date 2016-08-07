@@ -1,6 +1,6 @@
-From 10a5c73d835efec2cf5d8c99f9b312513a5a03b4 Mon Sep 17 00:00:00 2001
+From 655e756883ac68ae01da10e886323a3170e6d62d Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 24 Jul 2016 09:35:04 -0400
+Date: Sun, 7 Aug 2016 11:37:52 -0400
 Subject: Gallium Nine
 
 ---
@@ -42,7 +42,7 @@ Subject: Gallium Nine
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 257b563..3c094fc 100644
+index c8e8a4b..6c1ef8a 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,8 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),

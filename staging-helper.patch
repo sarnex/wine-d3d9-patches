@@ -1,7 +1,7 @@
-From 924d69d980c92f7d09eb53a82fe0275042052d10 Mon Sep 17 00:00:00 2001
+From da163ef1d3d7f1e1d6b04b70d472f198c5a2c517 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 24 Jul 2016 09:34:16 -0400
-Subject: Staging Helper
+Date: Sun, 7 Aug 2016 11:43:41 -0400
+Subject: [PATCH] Wine Staging Helper
 
 ---
  dlls/ntdll/loadorder.c      |  2 ++
@@ -38,10 +38,10 @@ index b94e773..028dbb7 100644
  /* About tab */
  #define IDC_ABT_OWNER                8432
 diff --git a/programs/winecfg/staging.c b/programs/winecfg/staging.c
-index 81a4e24..29c5a3f 100644
+index a96bdca..08fd92d 100644
 --- a/programs/winecfg/staging.c
 +++ b/programs/winecfg/staging.c
-@@ -125,6 +125,23 @@ static void gtk3_set(BOOL status)
+@@ -122,6 +122,23 @@ static void gtk3_set(BOOL status)
  #endif
  }
  
@@ -65,7 +65,7 @@ index 81a4e24..29c5a3f 100644
  static void load_staging_settings(HWND dialog)
  {
      CheckDlgButton(dialog, IDC_ENABLE_CSMT, csmt_get() ? BST_CHECKED : BST_UNCHECKED);
-@@ -132,6 +149,7 @@ static void load_staging_settings(HWND dialog)
+@@ -129,6 +146,7 @@ static void load_staging_settings(HWND dialog)
      CheckDlgButton(dialog, IDC_ENABLE_EAX, eax_get() ? BST_CHECKED : BST_UNCHECKED);
      CheckDlgButton(dialog, IDC_ENABLE_HIDEWINE, hidewine_get() ? BST_CHECKED : BST_UNCHECKED);
      CheckDlgButton(dialog, IDC_ENABLE_GTK3, gtk3_get() ? BST_CHECKED : BST_UNCHECKED);
@@ -73,7 +73,7 @@ index 81a4e24..29c5a3f 100644
  
  #ifndef HAVE_VAAPI
      disable(IDC_ENABLE_VAAPI);
-@@ -139,6 +157,9 @@ static void load_staging_settings(HWND dialog)
+@@ -136,6 +154,9 @@ static void load_staging_settings(HWND dialog)
  #ifndef HAVE_GTK3
      disable(IDC_ENABLE_GTK3);
  #endif
@@ -83,7 +83,7 @@ index 81a4e24..29c5a3f 100644
  }
  
  INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-@@ -166,6 +187,8 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
+@@ -163,6 +184,8 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
          {
          case IDC_ENABLE_CSMT:
              csmt_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_CSMT) == BST_CHECKED);
@@ -92,7 +92,7 @@ index 81a4e24..29c5a3f 100644
              SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
              return TRUE;
          case IDC_ENABLE_VAAPI:
-@@ -184,6 +207,12 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
+@@ -181,6 +204,12 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
              gtk3_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_GTK3) == BST_CHECKED);
              SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
              return TRUE;
