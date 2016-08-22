@@ -1,7 +1,7 @@
-From 655e756883ac68ae01da10e886323a3170e6d62d Mon Sep 17 00:00:00 2001
+From 35e3d663dfe400d838517b82b2ee8f6929b7002d Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 7 Aug 2016 11:37:52 -0400
-Subject: Gallium Nine
+Date: Sun, 21 Aug 2016 20:11:11 -0400
+Subject: [PATCH] Wine D3D9
 
 ---
  configure.ac                    |  194 ++++++
@@ -42,7 +42,7 @@ Subject: Gallium Nine
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index c8e8a4b..6c1ef8a 100644
+index dc0a045..9943ec5 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,8 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -259,7 +259,7 @@ index c8e8a4b..6c1ef8a 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2900,6 +3093,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2905,6 +3098,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -5208,7 +5208,7 @@ index 98267c9..aabf1b1 100644
  
  struct x11drv_escape_flush_gl_drawable
 diff --git a/include/config.h.in b/include/config.h.in
-index 254ea02..9117d5f 100644
+index 94b1c34..df153cc 100644
 --- a/include/config.h.in
 +++ b/include/config.h.in
 @@ -4,6 +4,12 @@
@@ -5224,7 +5224,7 @@ index 254ea02..9117d5f 100644
  /* Define to a function attribute for Microsoft hotpatch assembly prefix. */
  #undef DECLSPEC_HOTPATCH
  
-@@ -1397,6 +1403,9 @@
+@@ -1406,6 +1412,9 @@
  /* Define to the soname of the libcairo library. */
  #undef SONAME_LIBCAIRO
  
@@ -5234,7 +5234,7 @@ index 254ea02..9117d5f 100644
  /* Define to the soname of the libcapi20 library. */
  #undef SONAME_LIBCAPI20
  
-@@ -1409,6 +1418,9 @@
+@@ -1418,6 +1427,9 @@
  /* Define to the soname of the libdbus-1 library. */
  #undef SONAME_LIBDBUS_1
  
@@ -5245,5 +5245,5 @@ index 254ea02..9117d5f 100644
  #undef SONAME_LIBFONTCONFIG
  
 -- 
-2.9.2
+2.9.3
 

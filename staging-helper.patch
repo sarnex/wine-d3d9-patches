@@ -1,7 +1,7 @@
-From da163ef1d3d7f1e1d6b04b70d472f198c5a2c517 Mon Sep 17 00:00:00 2001
+From 21d3072cd064a56237f94be0f280a3417a264e5e Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 7 Aug 2016 11:43:41 -0400
-Subject: [PATCH] Wine Staging Helper
+Date: Sun, 21 Aug 2016 20:10:40 -0400
+Subject: [PATCH] Staging helper
 
 ---
  dlls/ntdll/loadorder.c      |  2 ++
@@ -118,5 +118,5 @@ index c375217..31cc9ba 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.9.2
+2.9.3
 

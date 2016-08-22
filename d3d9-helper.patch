@@ -1,6 +1,6 @@
-From 1f773eb12ddc041c59359b93e7aeadc01276d655 Mon Sep 17 00:00:00 2001
+From a6c904818c3b2d1a04177143a526cd2948792f0d Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 7 Aug 2016 11:42:04 -0400
+Date: Sun, 21 Aug 2016 20:12:31 -0400
 Subject: [PATCH] D3D9 Helper
 
 ---
@@ -841,5 +841,5 @@ index 72c3e1b..b9c0afc 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.9.2
+2.9.3
 
