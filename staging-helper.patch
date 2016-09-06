@@ -1,15 +1,3 @@
-From 21d3072cd064a56237f94be0f280a3417a264e5e Mon Sep 17 00:00:00 2001
-From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 21 Aug 2016 20:10:40 -0400
-Subject: [PATCH] Staging helper
-
----
- dlls/ntdll/loadorder.c      |  2 ++
- programs/winecfg/resource.h |  1 +
- programs/winecfg/staging.c  | 29 +++++++++++++++++++++++++++++
- programs/winecfg/winecfg.rc |  1 +
- 4 files changed, 33 insertions(+)
-
 diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
 index 5068812..0e05a0d 100644
 --- a/dlls/ntdll/loadorder.c
@@ -38,7 +26,7 @@ index b94e773..028dbb7 100644
  /* About tab */
  #define IDC_ABT_OWNER                8432
 diff --git a/programs/winecfg/staging.c b/programs/winecfg/staging.c
-index a96bdca..08fd92d 100644
+index a96bdca..7eec5e9 100644
 --- a/programs/winecfg/staging.c
 +++ b/programs/winecfg/staging.c
 @@ -122,6 +122,23 @@ static void gtk3_set(BOOL status)
@@ -77,7 +65,7 @@ index a96bdca..08fd92d 100644
  #ifndef HAVE_GTK3
      disable(IDC_ENABLE_GTK3);
  #endif
-+#if !defined(SONAME_D3DADAPTER9)
++#if !defined(HAVE_D3D9NINE)
 +    disable(IDC_ENABLE_NATIVE_D3D9);
 +#endif
  }
@@ -117,6 +105,3 @@ index c375217..31cc9ba 100644
  END
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
--- 
-2.9.3
-
