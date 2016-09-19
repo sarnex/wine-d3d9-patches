@@ -1,3 +1,21 @@
+From 7e59d589cd4c615869b5b5009363fa2c42e3949c Mon Sep 17 00:00:00 2001
+From: Nick Sarnie <commendsarnex@gmail.com>
+Date: Mon, 19 Sep 2016 01:02:27 -0400
+Subject: [PATCH] D3D9 Helper
+
+---
+ dlls/ntdll/loader.c          |  66 ++++++----
+ dlls/ntdll/loadorder.c       | 304 ++++++++++++++++++++++++++++++++-----------
+ dlls/ntdll/ntdll_misc.h      |   1 +
+ programs/winecfg/Makefile.in |   1 +
+ programs/winecfg/main.c      |  12 +-
+ programs/winecfg/resource.h  |   5 +
+ programs/winecfg/staging.c   |  93 +++++++++++++
+ programs/winecfg/winecfg.h   |   1 +
+ programs/winecfg/winecfg.rc  |  10 ++
+ 9 files changed, 394 insertions(+), 99 deletions(-)
+ create mode 100644 programs/winecfg/staging.c
+
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
 index f1ef7ab..ec7b1ce 100644
 --- a/dlls/ntdll/loader.c

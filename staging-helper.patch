@@ -1,3 +1,15 @@
+From 70437e372be52e682017b176b155a3a0fdef02d4 Mon Sep 17 00:00:00 2001
+From: Nick Sarnie <commendsarnex@gmail.com>
+Date: Mon, 19 Sep 2016 01:00:41 -0400
+Subject: Staging Helper
+
+---
+ dlls/ntdll/loadorder.c      |  2 ++
+ programs/winecfg/resource.h |  1 +
+ programs/winecfg/staging.c  | 29 +++++++++++++++++++++++++++++
+ programs/winecfg/winecfg.rc |  1 +
+ 4 files changed, 33 insertions(+)
+
 diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
 index 5068812..0e05a0d 100644
 --- a/dlls/ntdll/loadorder.c
@@ -105,3 +117,6 @@ index c375217..31cc9ba 100644
  END
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+-- 
+2.10.0
+

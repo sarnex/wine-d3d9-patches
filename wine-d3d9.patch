@@ -1,8 +1,49 @@
+From aae7e9b570976f6f04208ed93330bdb4ec0a0ceb Mon Sep 17 00:00:00 2001
+From: Nick Sarnie <commendsarnex@gmail.com>
+Date: Mon, 19 Sep 2016 01:00:58 -0400
+Subject: Wine D3D9
+
+---
+ configure                     |  768 ++++++++++++++++++++-
+ configure.ac                  |  190 ++++++
+ dlls/d3d9-nine/Makefile.in    |   14 +
+ dlls/d3d9-nine/d3d9-nine.spec |   14 +
+ dlls/d3d9-nine/d3d9_main.c    |  168 +++++
+ dlls/d3d9-nine/d3dadapter9.c  |  852 +++++++++++++++++++++++
+ dlls/d3d9-nine/d3dadapter9.h  |   32 +
+ dlls/d3d9-nine/device_wrap.c  |  500 ++++++++++++++
+ dlls/d3d9-nine/device_wrap.h  |   26 +
+ dlls/d3d9-nine/dri3.c         | 1388 ++++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/dri3.h         |   86 +++
+ dlls/d3d9-nine/present.c      | 1484 +++++++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/present.h      |   40 ++
+ dlls/d3d9-nine/version.rc     |   26 +
+ dlls/d3d9-nine/wndproc.c      |  277 ++++++++
+ dlls/d3d9-nine/wndproc.h      |   41 ++
+ dlls/winex11.drv/init.c       |    1 +
+ dlls/winex11.drv/x11drv.h     |    1 +
+ include/config.h.in           |   39 ++
+ 19 files changed, 5942 insertions(+), 5 deletions(-)
+ create mode 100644 dlls/d3d9-nine/Makefile.in
+ create mode 100644 dlls/d3d9-nine/d3d9-nine.spec
+ create mode 100644 dlls/d3d9-nine/d3d9_main.c
+ create mode 100644 dlls/d3d9-nine/d3dadapter9.c
+ create mode 100644 dlls/d3d9-nine/d3dadapter9.h
+ create mode 100644 dlls/d3d9-nine/device_wrap.c
+ create mode 100644 dlls/d3d9-nine/device_wrap.h
+ create mode 100644 dlls/d3d9-nine/dri3.c
+ create mode 100644 dlls/d3d9-nine/dri3.h
+ create mode 100644 dlls/d3d9-nine/present.c
+ create mode 100644 dlls/d3d9-nine/present.h
+ create mode 100644 dlls/d3d9-nine/version.rc
+ create mode 100644 dlls/d3d9-nine/wndproc.c
+ create mode 100644 dlls/d3d9-nine/wndproc.h
+
 diff --git a/configure b/configure
-index cff2ddb..6f4b645 100755
+index fe4394d..1003d78 100755
 --- a/configure
 +++ b/configure
-@@ -727,6 +727,7 @@ LDRPATH_INSTALL
+@@ -729,6 +729,7 @@ LDRPATH_INSTALL
  DLLFLAGS
  dlldir
  CPP
@@ -10,7 +51,7 @@ index cff2ddb..6f4b645 100755
  OPENGL_LIBS
  ICOTOOL
  CONVERT
-@@ -838,6 +839,9 @@ with_netapi
+@@ -840,6 +841,9 @@ with_netapi
  with_openal
  with_opencl
  with_opengl
@@ -20,7 +61,7 @@ index cff2ddb..6f4b645 100755
  with_osmesa
  with_oss
  with_pcap
-@@ -1046,6 +1050,7 @@ enable_d3d10core
+@@ -1065,6 +1069,7 @@ enable_d3d10core
  enable_d3d11
  enable_d3d8
  enable_d3d9
@@ -28,7 +69,7 @@ index cff2ddb..6f4b645 100755
  enable_d3dcompiler_33
  enable_d3dcompiler_34
  enable_d3dcompiler_35
-@@ -2287,6 +2292,14 @@ Optional Packages:
+@@ -2310,6 +2315,14 @@ Optional Packages:
    --without-openal        do not use OpenAL
    --without-opencl        do not use OpenCL
    --without-opengl        do not use OpenGL
@@ -43,7 +84,7 @@ index cff2ddb..6f4b645 100755
    --without-osmesa        do not use the OSMesa library
    --without-oss           do not use the OSS sound support
    --without-pcap          do not use the Packet Capture library
-@@ -3528,6 +3541,30 @@ if test "${with_opengl+set}" = set; then :
+@@ -3554,6 +3567,30 @@ if test "${with_opengl+set}" = set; then :
  fi
  
  
@@ -74,7 +115,7 @@ index cff2ddb..6f4b645 100755
  # Check whether --with-osmesa was given.
  if test "${with_osmesa+set}" = set; then :
    withval=$with_osmesa;
-@@ -6295,6 +6332,9 @@ fi
+@@ -6327,6 +6364,9 @@ fi
  OPENGL_LIBS=""
  
  
@@ -84,7 +125,7 @@ index cff2ddb..6f4b645 100755
  
  # Check whether --enable-largefile was given.
  if test "${enable_largefile+set}" = set; then :
-@@ -6321,7 +6361,7 @@ else
+@@ -6353,7 +6393,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -93,7 +134,7 @@ index cff2ddb..6f4b645 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6367,7 +6407,7 @@ else
+@@ -6399,7 +6439,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -102,7 +143,7 @@ index cff2ddb..6f4b645 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6391,7 +6431,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+@@ -6423,7 +6463,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -111,7 +152,7 @@ index cff2ddb..6f4b645 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6436,7 +6476,7 @@ else
+@@ -6468,7 +6508,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -120,7 +161,7 @@ index cff2ddb..6f4b645 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6460,7 +6500,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+@@ -6492,7 +6532,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -129,7 +170,7 @@ index cff2ddb..6f4b645 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -11216,6 +11256,722 @@ esac
+@@ -11248,6 +11288,722 @@ esac
  
  fi
  
@@ -852,7 +893,7 @@ index cff2ddb..6f4b645 100755
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -17968,6 +18724,7 @@ ac_config_commands="$ac_config_commands include/stamp-h"
+@@ -18091,6 +18847,7 @@ ac_config_commands="$ac_config_commands include/stamp-h"
  $as_echo_n "creating Makefile rules..." >&6
  
  ALL_VARS_RULES="OPENGL_LIBS = $OPENGL_LIBS
@@ -860,7 +901,7 @@ index cff2ddb..6f4b645 100755
  SOCKET_LIBS = $SOCKET_LIBS
  COREFOUNDATION_LIBS = $COREFOUNDATION_LIBS
  IOKIT_LIBS = $IOKIT_LIBS
-@@ -18288,6 +19045,7 @@ wine_fn_config_dll d3d8 enable_d3d8 implib
+@@ -18429,6 +19186,7 @@ wine_fn_config_dll d3d8 enable_d3d8 implib
  wine_fn_config_test dlls/d3d8/tests d3d8_test
  wine_fn_config_dll d3d9 enable_d3d9 implib
  wine_fn_config_test dlls/d3d9/tests d3d9_test
@@ -869,7 +910,7 @@ index cff2ddb..6f4b645 100755
  wine_fn_config_dll d3dcompiler_34 enable_d3dcompiler_34
  wine_fn_config_dll d3dcompiler_35 enable_d3dcompiler_35
 diff --git a/configure.ac b/configure.ac
-index 5969327..a63138c 100644
+index 1114361..6387d5e 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -887,7 +928,7 @@ index 5969327..a63138c 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -385,6 +393,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -386,6 +394,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -896,7 +937,7 @@ index 5969327..a63138c 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1205,6 +1215,185 @@ OpenGL and Direct3D won't be supported.])
+@@ -1206,6 +1216,185 @@ OpenGL and Direct3D won't be supported.])
      WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
                       [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
  
@@ -1082,7 +1123,7 @@ index 5969327..a63138c 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2913,6 +3102,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2943,6 +3132,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -6147,7 +6188,7 @@ index dc1b351..5c41675 100644
  
  struct x11drv_escape_flush_gl_drawable
 diff --git a/include/config.h.in b/include/config.h.in
-index 94b1c34..9d89257 100644
+index 3c1b817..adef55c 100644
 --- a/include/config.h.in
 +++ b/include/config.h.in
 @@ -4,6 +4,15 @@
@@ -6215,7 +6256,7 @@ index 94b1c34..9d89257 100644
  /* Define to 1 if you have the `gettextpo' library (-lgettextpo). */
  #undef HAVE_LIBGETTEXTPO
  
-@@ -1242,6 +1272,15 @@
+@@ -1248,6 +1278,15 @@
  /* Define to 1 if you have the `vsnprintf' function. */
  #undef HAVE_VSNPRINTF
  
