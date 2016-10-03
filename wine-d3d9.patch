@@ -1,8 +1,9 @@
-From aae7e9b570976f6f04208ed93330bdb4ec0a0ceb Mon Sep 17 00:00:00 2001
+From 5831315009920324687b311c436e6d903ea8ff83 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 19 Sep 2016 01:00:58 -0400
+Date: Sun, 2 Oct 2016 20:07:25 -0400
 Subject: Wine D3D9
 
+Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
  configure                     |  768 ++++++++++++++++++++-
  configure.ac                  |  190 ++++++
@@ -40,7 +41,7 @@ Subject: Wine D3D9
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure b/configure
-index fe4394d..1003d78 100755
+index be54924..09c4b21 100755
 --- a/configure
 +++ b/configure
 @@ -729,6 +729,7 @@ LDRPATH_INSTALL
@@ -61,7 +62,7 @@ index fe4394d..1003d78 100755
  with_osmesa
  with_oss
  with_pcap
-@@ -1065,6 +1069,7 @@ enable_d3d10core
+@@ -1081,6 +1085,7 @@ enable_d3d10core
  enable_d3d11
  enable_d3d8
  enable_d3d9
@@ -69,7 +70,7 @@ index fe4394d..1003d78 100755
  enable_d3dcompiler_33
  enable_d3dcompiler_34
  enable_d3dcompiler_35
-@@ -2310,6 +2315,14 @@ Optional Packages:
+@@ -2327,6 +2332,14 @@ Optional Packages:
    --without-openal        do not use OpenAL
    --without-opencl        do not use OpenCL
    --without-opengl        do not use OpenGL
@@ -84,7 +85,7 @@ index fe4394d..1003d78 100755
    --without-osmesa        do not use the OSMesa library
    --without-oss           do not use the OSS sound support
    --without-pcap          do not use the Packet Capture library
-@@ -3554,6 +3567,30 @@ if test "${with_opengl+set}" = set; then :
+@@ -3571,6 +3584,30 @@ if test "${with_opengl+set}" = set; then :
  fi
  
  
@@ -115,7 +116,7 @@ index fe4394d..1003d78 100755
  # Check whether --with-osmesa was given.
  if test "${with_osmesa+set}" = set; then :
    withval=$with_osmesa;
-@@ -6327,6 +6364,9 @@ fi
+@@ -6344,6 +6381,9 @@ fi
  OPENGL_LIBS=""
  
  
@@ -125,7 +126,7 @@ index fe4394d..1003d78 100755
  
  # Check whether --enable-largefile was given.
  if test "${enable_largefile+set}" = set; then :
-@@ -6353,7 +6393,7 @@ else
+@@ -6370,7 +6410,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -134,7 +135,7 @@ index fe4394d..1003d78 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6399,7 +6439,7 @@ else
+@@ -6416,7 +6456,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -143,7 +144,7 @@ index fe4394d..1003d78 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6423,7 +6463,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+@@ -6440,7 +6480,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -152,7 +153,7 @@ index fe4394d..1003d78 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6468,7 +6508,7 @@ else
+@@ -6485,7 +6525,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -161,7 +162,7 @@ index fe4394d..1003d78 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6492,7 +6532,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+@@ -6509,7 +6549,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -170,7 +171,7 @@ index fe4394d..1003d78 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -11248,6 +11288,722 @@ esac
+@@ -11265,6 +11305,722 @@ esac
  
  fi
  
@@ -893,7 +894,7 @@ index fe4394d..1003d78 100755
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -18091,6 +18847,7 @@ ac_config_commands="$ac_config_commands include/stamp-h"
+@@ -18108,6 +18864,7 @@ ac_config_commands="$ac_config_commands include/stamp-h"
  $as_echo_n "creating Makefile rules..." >&6
  
  ALL_VARS_RULES="OPENGL_LIBS = $OPENGL_LIBS
@@ -901,7 +902,7 @@ index fe4394d..1003d78 100755
  SOCKET_LIBS = $SOCKET_LIBS
  COREFOUNDATION_LIBS = $COREFOUNDATION_LIBS
  IOKIT_LIBS = $IOKIT_LIBS
-@@ -18429,6 +19186,7 @@ wine_fn_config_dll d3d8 enable_d3d8 implib
+@@ -18462,6 +19219,7 @@ wine_fn_config_dll d3d8 enable_d3d8 implib
  wine_fn_config_test dlls/d3d8/tests d3d8_test
  wine_fn_config_dll d3d9 enable_d3d9 implib
  wine_fn_config_test dlls/d3d9/tests d3d9_test
@@ -910,7 +911,7 @@ index fe4394d..1003d78 100755
  wine_fn_config_dll d3dcompiler_34 enable_d3dcompiler_34
  wine_fn_config_dll d3dcompiler_35 enable_d3dcompiler_35
 diff --git a/configure.ac b/configure.ac
-index 1114361..6387d5e 100644
+index 6c416ad..03d5cdc 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -1123,7 +1124,7 @@ index 1114361..6387d5e 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2943,6 +3132,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2959,6 +3148,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -6176,10 +6177,10 @@ index 3af1b78..f9abc9b 100644
                  }
                  break;
 diff --git a/dlls/winex11.drv/x11drv.h b/dlls/winex11.drv/x11drv.h
-index dc1b351..5c41675 100644
+index d7ff990..2e5312c 100644
 --- a/dlls/winex11.drv/x11drv.h
 +++ b/dlls/winex11.drv/x11drv.h
-@@ -296,6 +296,7 @@ struct x11drv_escape_get_drawable
+@@ -298,6 +298,7 @@ struct x11drv_escape_get_drawable
      Drawable                 drawable;     /* X drawable */
      Drawable                 gl_drawable;  /* GL drawable */
      int                      pixel_format; /* internal GL pixel format */

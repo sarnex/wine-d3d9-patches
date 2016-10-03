@@ -1,8 +1,9 @@
-From 7e59d589cd4c615869b5b5009363fa2c42e3949c Mon Sep 17 00:00:00 2001
+From 97bfe1a82a1aef571928efd4fa881278ec6371bd Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 19 Sep 2016 01:02:27 -0400
-Subject: [PATCH] D3D9 Helper
+Date: Sun, 2 Oct 2016 20:09:41 -0400
+Subject: D3D9 Helper
 
+Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
  dlls/ntdll/loader.c          |  66 ++++++----
  dlls/ntdll/loadorder.c       | 304 ++++++++++++++++++++++++++++++++-----------

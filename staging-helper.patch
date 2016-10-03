@@ -1,8 +1,9 @@
-From 70437e372be52e682017b176b155a3a0fdef02d4 Mon Sep 17 00:00:00 2001
+From 951f8f640334a357aede5c5c84f70322e3a99974 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 19 Sep 2016 01:00:41 -0400
+Date: Sun, 2 Oct 2016 20:07:10 -0400
 Subject: Staging Helper
 
+Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
  dlls/ntdll/loadorder.c      |  2 ++
  programs/winecfg/resource.h |  1 +
