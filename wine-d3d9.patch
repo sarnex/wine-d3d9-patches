@@ -1,7 +1,7 @@
-From c565f70c780c1b633cc989de883b025c4eaef138 Mon Sep 17 00:00:00 2001
+From 7aa0d93aaa06d2711d5a474df79ffbf86e378c3d Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 16 Oct 2016 18:42:56 -0400
-Subject: Wine D3D9
+Date: Wed, 2 Nov 2016 11:38:49 -0400
+Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
@@ -41,7 +41,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure b/configure
-index 6fb3ada..43977d7 100755
+index 9a0a9eb..c8561a8 100755
 --- a/configure
 +++ b/configure
 @@ -729,6 +729,7 @@ LDRPATH_INSTALL
@@ -62,7 +62,7 @@ index 6fb3ada..43977d7 100755
  with_osmesa
  with_oss
  with_pcap
-@@ -1081,6 +1085,7 @@ enable_d3d10core
+@@ -1082,6 +1086,7 @@ enable_d3d10core
  enable_d3d11
  enable_d3d8
  enable_d3d9
@@ -70,7 +70,7 @@ index 6fb3ada..43977d7 100755
  enable_d3dcompiler_33
  enable_d3dcompiler_34
  enable_d3dcompiler_35
-@@ -2329,6 +2334,14 @@ Optional Packages:
+@@ -2334,6 +2339,14 @@ Optional Packages:
    --without-openal        do not use OpenAL
    --without-opencl        do not use OpenCL
    --without-opengl        do not use OpenGL
@@ -85,7 +85,7 @@ index 6fb3ada..43977d7 100755
    --without-osmesa        do not use the OSMesa library
    --without-oss           do not use the OSS sound support
    --without-pcap          do not use the Packet Capture library
-@@ -3573,6 +3586,30 @@ if test "${with_opengl+set}" = set; then :
+@@ -3578,6 +3591,30 @@ if test "${with_opengl+set}" = set; then :
  fi
  
  
@@ -116,7 +116,7 @@ index 6fb3ada..43977d7 100755
  # Check whether --with-osmesa was given.
  if test "${with_osmesa+set}" = set; then :
    withval=$with_osmesa;
-@@ -6346,6 +6383,9 @@ fi
+@@ -6351,6 +6388,9 @@ fi
  OPENGL_LIBS=""
  
  
@@ -126,7 +126,7 @@ index 6fb3ada..43977d7 100755
  
  # Check whether --enable-largefile was given.
  if test "${enable_largefile+set}" = set; then :
-@@ -6372,7 +6412,7 @@ else
+@@ -6377,7 +6417,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -135,7 +135,7 @@ index 6fb3ada..43977d7 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6418,7 +6458,7 @@ else
+@@ -6423,7 +6463,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -144,7 +144,7 @@ index 6fb3ada..43977d7 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6442,7 +6482,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+@@ -6447,7 +6487,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -153,7 +153,7 @@ index 6fb3ada..43977d7 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6487,7 +6527,7 @@ else
+@@ -6492,7 +6532,7 @@ else
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -162,7 +162,7 @@ index 6fb3ada..43977d7 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -6511,7 +6551,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+@@ -6516,7 +6556,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
      We can't simply define LARGE_OFF_T to be 9223372036854775807,
      since some C++ compilers masquerading as C compilers
      incorrectly reject 9223372036854775807.  */
@@ -171,7 +171,7 @@ index 6fb3ada..43977d7 100755
    int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
  		       && LARGE_OFF_T % 2147483647 == 1)
  		      ? 1 : -1];
-@@ -11268,6 +11308,722 @@ esac
+@@ -11273,6 +11313,722 @@ esac
  
  fi
  
@@ -894,7 +894,7 @@ index 6fb3ada..43977d7 100755
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -18111,6 +18867,7 @@ ac_config_commands="$ac_config_commands include/stamp-h"
+@@ -18116,6 +18872,7 @@ ac_config_commands="$ac_config_commands include/stamp-h"
  $as_echo_n "creating Makefile rules..." >&6
  
  ALL_VARS_RULES="OPENGL_LIBS = $OPENGL_LIBS
@@ -902,7 +902,7 @@ index 6fb3ada..43977d7 100755
  SOCKET_LIBS = $SOCKET_LIBS
  COREFOUNDATION_LIBS = $COREFOUNDATION_LIBS
  IOKIT_LIBS = $IOKIT_LIBS
-@@ -18465,6 +19222,7 @@ wine_fn_config_dll d3d8 enable_d3d8 implib
+@@ -18471,6 +19228,7 @@ wine_fn_config_dll d3d8 enable_d3d8 implib
  wine_fn_config_test dlls/d3d8/tests d3d8_test
  wine_fn_config_dll d3d9 enable_d3d9 implib
  wine_fn_config_test dlls/d3d9/tests d3d9_test
@@ -911,7 +911,7 @@ index 6fb3ada..43977d7 100755
  wine_fn_config_dll d3dcompiler_34 enable_d3dcompiler_34
  wine_fn_config_dll d3dcompiler_35 enable_d3dcompiler_35
 diff --git a/configure.ac b/configure.ac
-index 75afcb7..8c8bcf6 100644
+index 583715a..a3a9944 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -1124,7 +1124,7 @@ index 75afcb7..8c8bcf6 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2960,6 +3149,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2961,6 +3150,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -6274,5 +6274,5 @@ index 08c9edf..d589434 100644
  #undef HAVE_X11_EXTENSIONS_SHAPE_H
  
 -- 
-2.10.1
+2.10.2
 
