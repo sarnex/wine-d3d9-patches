@@ -1,30 +1,30 @@
-From 7aa0d93aaa06d2711d5a474df79ffbf86e378c3d Mon Sep 17 00:00:00 2001
+From bdf72f6920c1ab9a18f25e006327f99c53edfd1f Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 2 Nov 2016 11:38:49 -0400
+Date: Wed, 9 Nov 2016 13:18:25 -0500
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
- configure                     |  768 ++++++++++++++++++++-
- configure.ac                  |  190 ++++++
- dlls/d3d9-nine/Makefile.in    |   14 +
- dlls/d3d9-nine/d3d9-nine.spec |   14 +
- dlls/d3d9-nine/d3d9_main.c    |  168 +++++
- dlls/d3d9-nine/d3dadapter9.c  |  852 +++++++++++++++++++++++
- dlls/d3d9-nine/d3dadapter9.h  |   32 +
- dlls/d3d9-nine/device_wrap.c  |  500 ++++++++++++++
- dlls/d3d9-nine/device_wrap.h  |   26 +
- dlls/d3d9-nine/dri3.c         | 1388 ++++++++++++++++++++++++++++++++++++++
- dlls/d3d9-nine/dri3.h         |   86 +++
- dlls/d3d9-nine/present.c      | 1484 +++++++++++++++++++++++++++++++++++++++++
- dlls/d3d9-nine/present.h      |   40 ++
- dlls/d3d9-nine/version.rc     |   26 +
- dlls/d3d9-nine/wndproc.c      |  277 ++++++++
- dlls/d3d9-nine/wndproc.h      |   41 ++
- dlls/winex11.drv/init.c       |    1 +
- dlls/winex11.drv/x11drv.h     |    1 +
- include/config.h.in           |   39 ++
- 19 files changed, 5942 insertions(+), 5 deletions(-)
+ configure.ac                      |  188 +++++
+ dlls/d3d9-nine/Makefile.in        |   15 +
+ dlls/d3d9-nine/d3d9-nine.spec     |   14 +
+ dlls/d3d9-nine/d3d9_main.c        |  173 ++++
+ dlls/d3d9-nine/d3dadapter9.c      |  853 ++++++++++++++++++++
+ dlls/d3d9-nine/d3dadapter9.h      |   32 +
+ dlls/d3d9-nine/device_wrap.c      |  500 ++++++++++++
+ dlls/d3d9-nine/device_wrap.h      |   26 +
+ dlls/d3d9-nine/dri3.c             | 1371 ++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/dri3.h             |   87 ++
+ dlls/d3d9-nine/present.c          | 1592 +++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/present.h          |   40 +
+ dlls/d3d9-nine/shader_validator.c |   88 ++
+ dlls/d3d9-nine/shader_validator.h |   29 +
+ dlls/d3d9-nine/version.rc         |   26 +
+ dlls/d3d9-nine/wndproc.c          |  277 +++++++
+ dlls/d3d9-nine/wndproc.h          |   41 +
+ dlls/winex11.drv/init.c           |    1 +
+ dlls/winex11.drv/x11drv.h         |    1 +
+ 19 files changed, 5354 insertions(+)
  create mode 100644 dlls/d3d9-nine/Makefile.in
  create mode 100644 dlls/d3d9-nine/d3d9-nine.spec
  create mode 100644 dlls/d3d9-nine/d3d9_main.c
@@ -36,882 +36,14 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/dri3.h
  create mode 100644 dlls/d3d9-nine/present.c
  create mode 100644 dlls/d3d9-nine/present.h
+ create mode 100644 dlls/d3d9-nine/shader_validator.c
+ create mode 100644 dlls/d3d9-nine/shader_validator.h
  create mode 100644 dlls/d3d9-nine/version.rc
  create mode 100644 dlls/d3d9-nine/wndproc.c
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
-diff --git a/configure b/configure
-index 9a0a9eb..c8561a8 100755
---- a/configure
-+++ b/configure
-@@ -729,6 +729,7 @@ LDRPATH_INSTALL
- DLLFLAGS
- dlldir
- CPP
-+D3D9NINE_LIBS
- OPENGL_LIBS
- ICOTOOL
- CONVERT
-@@ -840,6 +841,9 @@ with_netapi
- with_openal
- with_opencl
- with_opengl
-+with_d3d9_nine
-+with_d3d9_nine_module
-+with_d3d9_nine_headers_path
- with_osmesa
- with_oss
- with_pcap
-@@ -1082,6 +1086,7 @@ enable_d3d10core
- enable_d3d11
- enable_d3d8
- enable_d3d9
-+enable_d3d9_nine
- enable_d3dcompiler_33
- enable_d3dcompiler_34
- enable_d3dcompiler_35
-@@ -2334,6 +2339,14 @@ Optional Packages:
-   --without-openal        do not use OpenAL
-   --without-opencl        do not use OpenCL
-   --without-opengl        do not use OpenGL
-+  --without-d3d9-nine     do not build d3d9-nine.dll (Gallium Nine support)
-+  --with-d3d9-nine-module Gallium Nine module location. Can be 'manual' (path
-+                          to be filled in a register), 'auto' (default. use
-+                          pkgconfig to detect the location) or a path
-+  --with-d3d9-nine-headers-path
-+                          Gallium Nine headers location. Can be 'auto'
-+                          (default. use pkgconfig to detect the location) or a
-+                          path
-   --without-osmesa        do not use the OSMesa library
-   --without-oss           do not use the OSS sound support
-   --without-pcap          do not use the Packet Capture library
-@@ -3578,6 +3591,30 @@ if test "${with_opengl+set}" = set; then :
- fi
- 
- 
-+# Check whether --with-d3d9-nine was given.
-+if test "${with_d3d9_nine+set}" = set; then :
-+  withval=$with_d3d9_nine;
-+else
-+  with_d3d9_nine=auto
-+fi
-+
-+
-+# Check whether --with-d3d9-nine-module was given.
-+if test "${with_d3d9_nine_module+set}" = set; then :
-+  withval=$with_d3d9_nine_module;
-+else
-+  with_d3d9_nine_module=auto
-+fi
-+
-+
-+# Check whether --with-d3d9-nine-headers-path was given.
-+if test "${with_d3d9_nine_headers_path+set}" = set; then :
-+  withval=$with_d3d9_nine_headers_path;
-+else
-+  with_d3d9_nine_headers_path=auto
-+fi
-+
-+
- # Check whether --with-osmesa was given.
- if test "${with_osmesa+set}" = set; then :
-   withval=$with_osmesa;
-@@ -6351,6 +6388,9 @@ fi
- OPENGL_LIBS=""
- 
- 
-+D3D9NINE_LIBS=""
-+
-+
- 
- # Check whether --enable-largefile was given.
- if test "${enable_largefile+set}" = set; then :
-@@ -6377,7 +6417,7 @@ else
-     We can't simply define LARGE_OFF_T to be 9223372036854775807,
-     since some C++ compilers masquerading as C compilers
-     incorrectly reject 9223372036854775807.  */
--#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
-+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
-   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
- 		       && LARGE_OFF_T % 2147483647 == 1)
- 		      ? 1 : -1];
-@@ -6423,7 +6463,7 @@ else
-     We can't simply define LARGE_OFF_T to be 9223372036854775807,
-     since some C++ compilers masquerading as C compilers
-     incorrectly reject 9223372036854775807.  */
--#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
-+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
-   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
- 		       && LARGE_OFF_T % 2147483647 == 1)
- 		      ? 1 : -1];
-@@ -6447,7 +6487,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-     We can't simply define LARGE_OFF_T to be 9223372036854775807,
-     since some C++ compilers masquerading as C compilers
-     incorrectly reject 9223372036854775807.  */
--#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
-+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
-   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
- 		       && LARGE_OFF_T % 2147483647 == 1)
- 		      ? 1 : -1];
-@@ -6492,7 +6532,7 @@ else
-     We can't simply define LARGE_OFF_T to be 9223372036854775807,
-     since some C++ compilers masquerading as C compilers
-     incorrectly reject 9223372036854775807.  */
--#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
-+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
-   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
- 		       && LARGE_OFF_T % 2147483647 == 1)
- 		      ? 1 : -1];
-@@ -6516,7 +6556,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-     We can't simply define LARGE_OFF_T to be 9223372036854775807,
-     since some C++ compilers masquerading as C compilers
-     incorrectly reject 9223372036854775807.  */
--#define LARGE_OFF_T ((((off_t) 1 << 31) << 31) - 1 + (((off_t) 1 << 31) << 31))
-+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
-   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
- 		       && LARGE_OFF_T % 2147483647 == 1)
- 		      ? 1 : -1];
-@@ -11273,6 +11313,722 @@ esac
- 
- fi
- 
-+        if test "x$with_d3d9_nine" = "xauto" && (test "x$with_d3d9_nine_module" = "xauto" || test "x$with_d3d9_nine_headers_path" = "xauto")
-+    then
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether d3dadapter9 package (Gallium Nine) is present" >&5
-+$as_echo_n "checking whether d3dadapter9 package (Gallium Nine) is present... " >&6; }
-+        D3DADAPTER9_MODULEDIR=`$PKG_CONFIG --variable=moduledir d3dadapter9 2>/dev/null`
-+        D3DADAPTER9_LEGACY_MODULEDIR=`$PKG_CONFIG --variable=moduledir d3d 2>/dev/null`
-+        if test "x$D3DADAPTER9_MODULEDIR" = "x" -a "x$D3DADAPTER9_LEGACY_MODULEDIR" = "x"
-+        then
-+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, disabling support" >&5
-+$as_echo "no, disabling support" >&6; }
-+            with_d3d9_nine=no
-+        else
-+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-+$as_echo "yes" >&6; }
-+        fi
-+    fi
-+
-+    if test "x$with_d3d9_nine" != "xno"
-+    then
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: Checking for d3dadapter9 library dependencies" >&5
-+$as_echo "$as_me: Checking for d3dadapter9 library dependencies" >&6;}
-+        D3D9NINE_LIBS=""
-+        D3D9NINE_MISSING_LIBS=""
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xcb_request_check in -lxcb" >&5
-+$as_echo_n "checking for xcb_request_check in -lxcb... " >&6; }
-+if ${ac_cv_lib_xcb_xcb_request_check+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lxcb  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char xcb_request_check ();
-+int
-+main ()
-+{
-+return xcb_request_check ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_xcb_xcb_request_check=yes
-+else
-+  ac_cv_lib_xcb_xcb_request_check=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xcb_xcb_request_check" >&5
-+$as_echo "$ac_cv_lib_xcb_xcb_request_check" >&6; }
-+if test "x$ac_cv_lib_xcb_xcb_request_check" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lxcb"
-+
-+fi
-+
-+        test "x$ac_cv_lib_xcb_xcb_request_check" != xyes && D3D9NINE_MISSING_LIBS="libxcb "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xcb_dri3_open in -lxcb-dri3" >&5
-+$as_echo_n "checking for xcb_dri3_open in -lxcb-dri3... " >&6; }
-+if ${ac_cv_lib_xcb_dri3_xcb_dri3_open+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lxcb-dri3  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char xcb_dri3_open ();
-+int
-+main ()
-+{
-+return xcb_dri3_open ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_xcb_dri3_xcb_dri3_open=yes
-+else
-+  ac_cv_lib_xcb_dri3_xcb_dri3_open=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xcb_dri3_xcb_dri3_open" >&5
-+$as_echo "$ac_cv_lib_xcb_dri3_xcb_dri3_open" >&6; }
-+if test "x$ac_cv_lib_xcb_dri3_xcb_dri3_open" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lxcb-dri3"
-+
-+fi
-+
-+        test "x$ac_cv_lib_xcb_dri3_xcb_dri3_open" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libxcb-dri3 "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xcb_present_notify_msc in -lxcb-present" >&5
-+$as_echo_n "checking for xcb_present_notify_msc in -lxcb-present... " >&6; }
-+if ${ac_cv_lib_xcb_present_xcb_present_notify_msc+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lxcb-present  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char xcb_present_notify_msc ();
-+int
-+main ()
-+{
-+return xcb_present_notify_msc ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_xcb_present_xcb_present_notify_msc=yes
-+else
-+  ac_cv_lib_xcb_present_xcb_present_notify_msc=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xcb_present_xcb_present_notify_msc" >&5
-+$as_echo "$ac_cv_lib_xcb_present_xcb_present_notify_msc" >&6; }
-+if test "x$ac_cv_lib_xcb_present_xcb_present_notify_msc" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lxcb-present"
-+
-+fi
-+
-+        test "x$ac_cv_lib_xcb_present_xcb_present_notify_msc" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libxcb-present "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xcb_xfixes_create_region in -lxcb-xfixes" >&5
-+$as_echo_n "checking for xcb_xfixes_create_region in -lxcb-xfixes... " >&6; }
-+if ${ac_cv_lib_xcb_xfixes_xcb_xfixes_create_region+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lxcb-xfixes  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char xcb_xfixes_create_region ();
-+int
-+main ()
-+{
-+return xcb_xfixes_create_region ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_xcb_xfixes_xcb_xfixes_create_region=yes
-+else
-+  ac_cv_lib_xcb_xfixes_xcb_xfixes_create_region=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xcb_xfixes_xcb_xfixes_create_region" >&5
-+$as_echo "$ac_cv_lib_xcb_xfixes_xcb_xfixes_create_region" >&6; }
-+if test "x$ac_cv_lib_xcb_xfixes_xcb_xfixes_create_region" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lxcb-xfixes"
-+
-+fi
-+
-+        test "x$ac_cv_lib_xcb_xfixes_xcb_xfixes_create_region" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libxcb-xfixes "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XGetXCBConnection in -lX11-xcb" >&5
-+$as_echo_n "checking for XGetXCBConnection in -lX11-xcb... " >&6; }
-+if ${ac_cv_lib_X11_xcb_XGetXCBConnection+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lX11-xcb  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char XGetXCBConnection ();
-+int
-+main ()
-+{
-+return XGetXCBConnection ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_X11_xcb_XGetXCBConnection=yes
-+else
-+  ac_cv_lib_X11_xcb_XGetXCBConnection=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_X11_xcb_XGetXCBConnection" >&5
-+$as_echo "$ac_cv_lib_X11_xcb_XGetXCBConnection" >&6; }
-+if test "x$ac_cv_lib_X11_xcb_XGetXCBConnection" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lX11-xcb"
-+
-+fi
-+
-+        test "x$ac_cv_lib_X11_xcb_XGetXCBConnection" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libX11-xcb "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XOpenDisplay in -lX11" >&5
-+$as_echo_n "checking for XOpenDisplay in -lX11... " >&6; }
-+if ${ac_cv_lib_X11_XOpenDisplay+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lX11  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char XOpenDisplay ();
-+int
-+main ()
-+{
-+return XOpenDisplay ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_X11_XOpenDisplay=yes
-+else
-+  ac_cv_lib_X11_XOpenDisplay=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_X11_XOpenDisplay" >&5
-+$as_echo "$ac_cv_lib_X11_XOpenDisplay" >&6; }
-+if test "x$ac_cv_lib_X11_XOpenDisplay" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lX11"
-+
-+fi
-+
-+        test "x$ac_cv_lib_X11_XOpenDisplay" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libX11 "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XextRemoveDisplay in -lXext" >&5
-+$as_echo_n "checking for XextRemoveDisplay in -lXext... " >&6; }
-+if ${ac_cv_lib_Xext_XextRemoveDisplay+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lXext  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char XextRemoveDisplay ();
-+int
-+main ()
-+{
-+return XextRemoveDisplay ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_Xext_XextRemoveDisplay=yes
-+else
-+  ac_cv_lib_Xext_XextRemoveDisplay=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_Xext_XextRemoveDisplay" >&5
-+$as_echo "$ac_cv_lib_Xext_XextRemoveDisplay" >&6; }
-+if test "x$ac_cv_lib_Xext_XextRemoveDisplay" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lXext"
-+
-+fi
-+
-+        test "x$ac_cv_lib_Xext_XextRemoveDisplay" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libXext "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pthread_mutex_lock in -lpthread" >&5
-+$as_echo_n "checking for pthread_mutex_lock in -lpthread... " >&6; }
-+if ${ac_cv_lib_pthread_pthread_mutex_lock+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lpthread  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char pthread_mutex_lock ();
-+int
-+main ()
-+{
-+return pthread_mutex_lock ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_pthread_pthread_mutex_lock=yes
-+else
-+  ac_cv_lib_pthread_pthread_mutex_lock=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pthread_pthread_mutex_lock" >&5
-+$as_echo "$ac_cv_lib_pthread_pthread_mutex_lock" >&6; }
-+if test "x$ac_cv_lib_pthread_pthread_mutex_lock" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lpthread"
-+
-+fi
-+
-+        test "x$ac_cv_lib_pthread_pthread_mutex_lock" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libpthread "
-+        # libs for the dri2 fallback
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for glGenFramebuffers in -lGL" >&5
-+$as_echo_n "checking for glGenFramebuffers in -lGL... " >&6; }
-+if ${ac_cv_lib_GL_glGenFramebuffers+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lGL  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char glGenFramebuffers ();
-+int
-+main ()
-+{
-+return glGenFramebuffers ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_GL_glGenFramebuffers=yes
-+else
-+  ac_cv_lib_GL_glGenFramebuffers=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_GL_glGenFramebuffers" >&5
-+$as_echo "$ac_cv_lib_GL_glGenFramebuffers" >&6; }
-+if test "x$ac_cv_lib_GL_glGenFramebuffers" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lGL"
-+
-+fi
-+
-+        test "x$ac_cv_lib_GL_glGenFramebuffers" != xyes && D3D9NINE_MISSING_LIBS="libGL "
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for eglCreateContext in -lEGL" >&5
-+$as_echo_n "checking for eglCreateContext in -lEGL... " >&6; }
-+if ${ac_cv_lib_EGL_eglCreateContext+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+  ac_check_lib_save_LIBS=$LIBS
-+LIBS="-lEGL  $LIBS"
-+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+
-+/* Override any GCC internal prototype to avoid an error.
-+   Use char because int might match the return type of a GCC
-+   builtin and then its argument prototype would still apply.  */
-+#ifdef __cplusplus
-+extern "C"
-+#endif
-+char eglCreateContext ();
-+int
-+main ()
-+{
-+return eglCreateContext ();
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_link "$LINENO"; then :
-+  ac_cv_lib_EGL_eglCreateContext=yes
-+else
-+  ac_cv_lib_EGL_eglCreateContext=no
-+fi
-+rm -f core conftest.err conftest.$ac_objext \
-+    conftest$ac_exeext conftest.$ac_ext
-+LIBS=$ac_check_lib_save_LIBS
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_EGL_eglCreateContext" >&5
-+$as_echo "$ac_cv_lib_EGL_eglCreateContext" >&6; }
-+if test "x$ac_cv_lib_EGL_eglCreateContext" = xyes; then :
-+  D3D9NINE_LIBS="$D3D9NINE_LIBS -lEGL"
-+
-+fi
-+
-+        test "x$ac_cv_lib_EGL_eglCreateContext" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libEGL"
-+
-+        if test "x$D3D9NINE_MISSING_LIBS" != x
-+        then
-+            if test "x$with_d3d9_nine" = "xyes"
-+            then
-+                as_fn_error $? "Missing libraries to build d3d9-nine.dll: $D3D9NINE_MISSING_LIBS" "$LINENO" 5
-+            else
-+                { $as_echo "$as_me:${as_lineno-$LINENO}: Missing libraries to build d3d9-nine.dll: $D3D9NINE_MISSING_LIBS . disabling support" >&5
-+$as_echo "$as_me: Missing libraries to build d3d9-nine.dll: $D3D9NINE_MISSING_LIBS . disabling support" >&6;}
-+                with_d3d9_nine=no
-+            fi
-+        fi
-+    fi
-+
-+    if test "x$with_d3d9_nine" != "xno"
-+    then
-+        { $as_echo "$as_me:${as_lineno-$LINENO}: Checking d3dadapter9 header dependencies" >&5
-+$as_echo "$as_me: Checking d3dadapter9 header dependencies" >&6;}
-+        D3D9NINE_MISSING_HEADERS=""
-+        for ac_header in X11/Xlib-xcb.h xcb/dri3.h xcb/present.h X11/Xutil.h X11/Xlib.h pthread.h
-+do :
-+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-+  cat >>confdefs.h <<_ACEOF
-+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-+_ACEOF
-+
-+fi
-+
-+done
-+
-+        test "x$ac_cv_header_X11_Xlib_xcb_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/Xlib-xcb.h "
-+        test "x$ac_cv_header_xcb_dri3_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}xcb/dri3.h "
-+        test "x$ac_cv_header_xcb_present_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}xcb/present.h "
-+        test "x$ac_cv_header_X11_Xutil_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/Xutil.h "
-+        test "x$ac_cv_header_X11_Xlib_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/Xlib.h "
-+        test "x$ac_cv_header_pthread_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}pthread.h "
-+        # headers for the dri2 fallback
-+        for ac_header in X11/Xmd.h X11/Xlibint.h X11/extensions/dri2tokens.h X11/extensions/dri2proto.h X11/extensions/extutil.h GL/gl.h GL/glext.h EGL/egl.h EGL/eglext.h libdrm/drm_fourcc.h libdrm/drm.h
-+do :
-+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-+ac_fn_c_check_header_compile "$LINENO" "$ac_header" "$as_ac_Header" "
-+#include <X11/Xlibint.h>
-+#include <X11/extensions/dri2tokens.h>
-+#include <GL/gl.h>
-+#include <EGL/egl.h>
-+
-+"
-+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-+  cat >>confdefs.h <<_ACEOF
-+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-+_ACEOF
-+
-+fi
-+
-+done
-+
-+        test "x$ac_cv_header_X11_Xmd_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/Xmd.h "
-+        test "x$ac_cv_header_X11_Xlibint_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/Xlibint.h "
-+        test "x$ac_cv_header_X11_extensions_dri2tokens_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/extensions/dri2tokens.h "
-+        test "x$ac_cv_header_X11_extensions_dri2proto_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/extensions/dri2proto.h "
-+        test "x$ac_cv_header_X11_extensions_extutil_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}X11/extensions/extutil.h "
-+        test "x$ac_cv_header_GL_gl_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}GL/gl.h "
-+        test "x$ac_cv_header_GL_glext_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}GL/glext.h "
-+        test "x$ac_cv_header_EGL_egl_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}EGL/egl.h "
-+        test "x$ac_cv_header_EGL_eglext_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}EGL/eglext.h "
-+        test "x$ac_cv_header_libdrm_drm_fourcc_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}libdrm/drm_fourcc.h "
-+        test "x$ac_cv_header_libdrm_drm_h" != xyes && D3D9NINE_MISSING_HEADERS="${D3D9NINE_MISSING_HEADERS}libdrm/drm.h "
-+        if test "x$D3D9NINE_MISSING_HEADERS" != x
-+        then
-+            if test "x$with_d3d9_nine" = "xyes"
-+            then
-+                as_fn_error $? "Missing headers to build d3d9-nine.dll: $D3D9NINE_MISSING_HEADERS" "$LINENO" 5
-+            else
-+                { $as_echo "$as_me:${as_lineno-$LINENO}: Missing headers to build d3d9-nine.dll: $D3D9NINE_MISSING_HEADERS . disabling support" >&5
-+$as_echo "$as_me: Missing headers to build d3d9-nine.dll: $D3D9NINE_MISSING_HEADERS . disabling support" >&6;}
-+                with_d3d9_nine=no
-+            fi
-+        fi
-+    fi
-+
-+    if test "x$with_d3d9_nine" != "xno"
-+    then
-+        # d3d9-nine.dll will be built and an option to use it
-+        # added. The module path can always be overriden by
-+        # a wine registry setting. If the module isn't found
-+        # at execution time, the dll will refuse to load and
-+        # print an error message to the user.
-+
-+$as_echo "#define HAVE_D3D9NINE 1" >>confdefs.h
-+
-+        # default: use pkgconfig to find the gallium nine module.
-+        # Check the module is there.
-+        if test "x$with_d3d9_nine_module" = "xauto"
-+        then
-+            D3DADAPTER9_MODULEDIR=`$PKG_CONFIG --variable=moduledir d3dadapter9 2>/dev/null`
-+            if test "x$D3DADAPTER9_MODULEDIR" = x
-+            then
-+                # legacy path
-+                D3DADAPTER9_MODULEDIR=`$PKG_CONFIG --variable=moduledir d3d 2>/dev/null`
-+                if test "x$D3DADAPTER9_MODULEDIR" = x
-+                then
-+                    as_fn_error $? "pkg-config couldn't find Gallium Nine module" "$LINENO" 5
-+                fi
-+            fi
-+
-+cat >>confdefs.h <<_ACEOF
-+#define D3D9NINE_MODULEPATH "`echo ${D3DADAPTER9_MODULEDIR}/d3dadapter9.so.1`"
-+_ACEOF
-+
-+            # Check module
-+            CPPFLAGSBAK=$CPPFLAGS
-+            # link against libdl
-+            CPPFLAGS="$CPPFLAGS -Wl,--no-as-needed -ldl"
-+
-+            if test "$cross_compiling" = yes; then :
-+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-+as_fn_error $? "cannot run test program while cross compiling
-+See \`config.log' for more details" "$LINENO" 5; }
-+else
-+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-+/* end confdefs.h.  */
-+#include <dlfcn.h>
-+#include <stdlib.h>
-+int
-+main ()
-+{
-+void *handle = dlopen("${D3DADAPTER9_MODULEDIR}/d3dadapter9.so.1", RTLD_GLOBAL | RTLD_NOW);
-+exit((handle && dlsym(handle, "D3DAdapter9GetProc")) ? 0 : 1)
-+  ;
-+  return 0;
-+}
-+_ACEOF
-+if ac_fn_c_try_run "$LINENO"; then :
-+  echo "d3dadapter9.so.1 found at '${D3DADAPTER9_MODULEDIR}/d3dadapter9.so.1'"
-+else
-+  as_fn_error $? "Couldn't load Gallium nine module at '${D3DADAPTER9_MODULEDIR}/d3dadapter9.so.1' (found by pkg-config)" "$LINENO" 5
-+fi
-+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-+  conftest.$ac_objext conftest.beam conftest.$ac_ext
-+fi
-+
-+            CPPFLAGS=$CPPFLAGSBAK
-+        else
-+            # Manual : do not feed any path, the wine registry will have
-+            # to be used to pass a path. Useful for wine builds
-+            # that are distributed and will run on different
-+            # distros.
-+            # Else feed a path directly. Useful for distro maintainers who
-+            # know where the package would be installed, but don't have
-+            # it installed on their build.
-+            # Don't check if the module is there.
-+            if test "x$with_d3d9_nine_module" != "xmanual"
-+            then
-+
-+cat >>confdefs.h <<_ACEOF
-+#define D3D9NINE_MODULEPATH "`echo ${with_d3d9_nine_module}`"
-+_ACEOF
-+
-+            fi
-+        fi
-+
-+        # by default the headers are found with pkgconfig,
-+        # but it is possible to pass a path to a specific directory.
-+        # that directory must contain a d3dadapter directory
-+        # with d3dadapter9.h, drm.h and present.h
-+        if test "x$with_d3d9_nine_headers_path" = "xauto"
-+        then
-+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
-+$as_echo_n "checking for a sed that does not truncate output... " >&6; }
-+if ${ac_cv_path_SED+:} false; then :
-+  $as_echo_n "(cached) " >&6
-+else
-+            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
-+     for ac_i in 1 2 3 4 5 6 7; do
-+       ac_script="$ac_script$as_nl$ac_script"
-+     done
-+     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
-+     { ac_script=; unset ac_script;}
-+     if test -z "$SED"; then
-+  ac_path_SED_found=false
-+  # Loop through the user's path and test for each of PROGNAME-LIST
-+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-+for as_dir in $PATH
-+do
-+  IFS=$as_save_IFS
-+  test -z "$as_dir" && as_dir=.
-+    for ac_prog in sed gsed; do
-+    for ac_exec_ext in '' $ac_executable_extensions; do
-+      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
-+      as_fn_executable_p "$ac_path_SED" || continue
-+# Check for GNU ac_path_SED and select it if it is found.
-+  # Check for GNU $ac_path_SED
-+case `"$ac_path_SED" --version 2>&1` in
-+*GNU*)
-+  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
-+*)
-+  ac_count=0
-+  $as_echo_n 0123456789 >"conftest.in"
-+  while :
-+  do
-+    cat "conftest.in" "conftest.in" >"conftest.tmp"
-+    mv "conftest.tmp" "conftest.in"
-+    cp "conftest.in" "conftest.nl"
-+    $as_echo '' >> "conftest.nl"
-+    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
-+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-+    as_fn_arith $ac_count + 1 && ac_count=$as_val
-+    if test $ac_count -gt ${ac_path_SED_max-0}; then
-+      # Best one so far, save it but keep looking for a better one
-+      ac_cv_path_SED="$ac_path_SED"
-+      ac_path_SED_max=$ac_count
-+    fi
-+    # 10*(2^10) chars as input seems more than enough
-+    test $ac_count -gt 10 && break
-+  done
-+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-+esac
-+
-+      $ac_path_SED_found && break 3
-+    done
-+  done
-+  done
-+IFS=$as_save_IFS
-+  if test -z "$ac_cv_path_SED"; then
-+    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
-+  fi
-+else
-+  ac_cv_path_SED=$SED
-+fi
-+
-+fi
-+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
-+$as_echo "$ac_cv_path_SED" >&6; }
-+ SED="$ac_cv_path_SED"
-+  rm -f conftest.sed
-+
-+            D3DADAPTER9_INCLUDEDIR=`$PKG_CONFIG --variable=includedir d3dadapter9 2>/dev/null`
-+            D3DADAPTER9_MAJOR=`$PKG_CONFIG --modversion d3dadapter9 2>/dev/null | $SED -n 's/\([^\.]*\)\..*$/\1/p'`
-+            if test "x$D3DADAPTER9_INCLUDEDIR" = x
-+            then
-+                # legacy path
-+                D3DADAPTER9_INCLUDEDIR=`$PKG_CONFIG --variable=includedir d3d 2>/dev/null`
-+                D3DADAPTER9_MAJOR=`$PKG_CONFIG --modversion d3d 2>/dev/null | $SED -n 's/\([^\.]*\)\..*$/\1/p'`
-+                if test "x$D3DADAPTER9_INCLUDEDIR" = x
-+                then
-+                    as_fn_error $? "pkg-config couldn't find Gallium Nine headers" "$LINENO" 5
-+                fi
-+            fi
-+            # check major version of package. The major version number guarantees header compatibility.
-+            if test "x$D3DADAPTER9_MAJOR" != x1
-+            then
-+                as_fn_error $? "pkg-config found Gallium Nine Module and Headers, but version is incompatible" "$LINENO" 5
-+            fi
-+        else
-+            D3DADAPTER9_INCLUDEDIR=`echo ${with_d3d9_nine_headers_path}`
-+        fi
-+
-+cat >>confdefs.h <<_ACEOF
-+#define D3D9NINE_HEADERS_CFLAGS "`echo -I${D3DADAPTER9_INCLUDEDIR}`"
-+_ACEOF
-+
-+
-+
-+$as_echo "#define D3D9NINE_DRI2 1" >>confdefs.h
-+
-+    else
-+        enable_d3d9_nine=${enable_d3d9_nine:-no}
-+    fi
-+
-     CPPFLAGS="$ac_save_CPPFLAGS"
- else
-     X_CFLAGS=""
-@@ -18116,6 +18872,7 @@ ac_config_commands="$ac_config_commands include/stamp-h"
- $as_echo_n "creating Makefile rules..." >&6
- 
- ALL_VARS_RULES="OPENGL_LIBS = $OPENGL_LIBS
-+D3D9NINE_LIBS = $D3D9NINE_LIBS
- SOCKET_LIBS = $SOCKET_LIBS
- COREFOUNDATION_LIBS = $COREFOUNDATION_LIBS
- IOKIT_LIBS = $IOKIT_LIBS
-@@ -18471,6 +19228,7 @@ wine_fn_config_dll d3d8 enable_d3d8 implib
- wine_fn_config_test dlls/d3d8/tests d3d8_test
- wine_fn_config_dll d3d9 enable_d3d9 implib
- wine_fn_config_test dlls/d3d9/tests d3d9_test
-+wine_fn_config_dll d3d9-nine enable_d3d9_nine implib
- wine_fn_config_dll d3dcompiler_33 enable_d3dcompiler_33
- wine_fn_config_dll d3dcompiler_34 enable_d3dcompiler_34
- wine_fn_config_dll d3dcompiler_35 enable_d3dcompiler_35
 diff --git a/configure.ac b/configure.ac
-index 583715a..a3a9944 100644
+index 583715a..7f19a7e 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -938,7 +70,7 @@ index 583715a..a3a9944 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1207,6 +1217,185 @@ OpenGL and Direct3D won't be supported.])
+@@ -1207,6 +1217,183 @@ OpenGL and Direct3D won't be supported.])
      WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
                       [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
  
@@ -976,8 +108,6 @@ index 583715a..a3a9944 100644
 +        test "x$ac_cv_lib_X11_XOpenDisplay" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libX11 "
 +        AC_CHECK_LIB(Xext,XextRemoveDisplay,[AC_SUBST(D3D9NINE_LIBS,["$D3D9NINE_LIBS -lXext"])])
 +        test "x$ac_cv_lib_Xext_XextRemoveDisplay" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libXext "
-+        AC_CHECK_LIB(pthread,pthread_mutex_lock,[AC_SUBST(D3D9NINE_LIBS,["$D3D9NINE_LIBS -lpthread"])])
-+        test "x$ac_cv_lib_pthread_pthread_mutex_lock" != xyes && D3D9NINE_MISSING_LIBS="${D3D9NINE_MISSING_LIBS}libpthread "
 +        # libs for the dri2 fallback
 +        AC_CHECK_LIB(GL,glGenFramebuffers,[AC_SUBST(D3D9NINE_LIBS,["$D3D9NINE_LIBS -lGL"])])
 +        test "x$ac_cv_lib_GL_glGenFramebuffers" != xyes && D3D9NINE_MISSING_LIBS="libGL "
@@ -1124,7 +254,7 @@ index 583715a..a3a9944 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2961,6 +3150,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2961,6 +3148,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -1134,10 +264,10 @@ index 583715a..a3a9944 100644
  WINE_CONFIG_DLL(d3dcompiler_35)
 diff --git a/dlls/d3d9-nine/Makefile.in b/dlls/d3d9-nine/Makefile.in
 new file mode 100644
-index 0000000..f737d80
+index 0000000..c6df8d7
 --- /dev/null
 +++ b/dlls/d3d9-nine/Makefile.in
-@@ -0,0 +1,14 @@
+@@ -0,0 +1,15 @@
 +MODULE    = d3d9-nine.dll
 +IMPORTS   = dxguid uuid advapi32 gdi32 user32
 +EXTRAINCL = $(X_CFLAGS) $(D3D9NINE_HEADERS_CFLAGS)
@@ -1149,7 +279,8 @@ index 0000000..f737d80
 +        device_wrap.c \
 +        present.c \
 +        dri3.c \
-+        wndproc.c
++        wndproc.c \
++        shader_validator.c
 +
 +RC_SRCS = version.rc
 diff --git a/dlls/d3d9-nine/d3d9-nine.spec b/dlls/d3d9-nine/d3d9-nine.spec
@@ -1174,10 +305,10 @@ index 0000000..a33cba5
 +@ stdcall Direct3DCreate9Ex(long ptr)
 diff --git a/dlls/d3d9-nine/d3d9_main.c b/dlls/d3d9-nine/d3d9_main.c
 new file mode 100644
-index 0000000..0d5c828
+index 0000000..d1efdf4
 --- /dev/null
 +++ b/dlls/d3d9-nine/d3d9_main.c
-@@ -0,0 +1,168 @@
+@@ -0,0 +1,173 @@
 +/*
 + * Direct3D 9
 + *
@@ -1203,17 +334,16 @@ index 0000000..0d5c828
 + */
 +
 +#include "config.h"
-+#include "initguid.h"
 +#include "wine/debug.h"
 +
 +#include <fcntl.h>
-+
-+#include <d3dadapter/d3dadapter9.h>
++#include <d3d9.h>
 +
 +#include "d3dadapter9.h"
 +#include "wndproc.h"
++#include "shader_validator.h"
 +
-+WINE_DEFAULT_DEBUG_CHANNEL(d3dadapter);
++WINE_DEFAULT_DEBUG_CHANNEL(d3d9nine);
 +
 +static int D3DPERF_event_level = 0;
 +static Display *gdi_display;
@@ -1247,12 +377,18 @@ index 0000000..0d5c828
 + * No documentation available for this function.
 + * SDK only says it is internal and shouldn't be used.
 + */
++
 +void* WINAPI Direct3DShaderValidatorCreate9(void)
 +{
-+    static int once;
++    IDirect3DShaderValidator9Impl* object =
++            HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
++                    sizeof(IDirect3DShaderValidator9Impl));
 +
-+    if (!once++) FIXME("stub\n");
-+    return NULL;
++    object->lpVtbl = &IDirect3DShaderValidator9Vtbl;
++    object->ref = 1;
++
++    FIXME("Returning interface %p\n", object);
++    return (void*) object;
 +}
 +
 +/*******************************************************************
@@ -1348,10 +484,10 @@ index 0000000..0d5c828
 +}
 diff --git a/dlls/d3d9-nine/d3dadapter9.c b/dlls/d3d9-nine/d3dadapter9.c
 new file mode 100644
-index 0000000..67e15af
+index 0000000..daa9524
 --- /dev/null
 +++ b/dlls/d3d9-nine/d3dadapter9.c
-@@ -0,0 +1,852 @@
+@@ -0,0 +1,853 @@
 +/*
 + * Wine IDirect3D9 interface using ID3DAdapter9
 + *
@@ -1382,7 +518,6 @@ index 0000000..67e15af
 +
 +WINE_DEFAULT_DEBUG_CHANNEL(d3d9nine);
 +
-+#include <wingdi.h>
 +#include <d3dadapter/d3dadapter9.h>
 +#include "present.h"
 +#include "device_wrap.h"
@@ -1797,7 +932,8 @@ index 0000000..67e15af
 +            ordinal = Adapter - This->map[Adapter].master;
 +        }
 +        hr = present_create_present_group(This->gdi_display, group->devname, ordinal,
-+                hFocusWindow, pPresentationParameters, nparams, &present, This->ex);
++                hFocusWindow, pPresentationParameters, nparams, &present, This->ex,
++                BehaviorFlags);
 +    }
 +
 +    if (FAILED(hr))
@@ -1823,6 +959,7 @@ index 0000000..67e15af
 +    {
 +        WARN("ADAPTER_PROC failed.\n");
 +        ID3DPresentGroup_Release(present);
++        return hr;
 +    }
 +
 +    /* Nine returns different vtables for Ex, non Ex and
@@ -2782,10 +1919,10 @@ index 0000000..8f5e720
 +#endif /* __NINE_DEVICE_WRAP_H */
 diff --git a/dlls/d3d9-nine/dri3.c b/dlls/d3d9-nine/dri3.c
 new file mode 100644
-index 0000000..8b86e4a
+index 0000000..42b9a82
 --- /dev/null
 +++ b/dlls/d3d9-nine/dri3.c
-@@ -0,0 +1,1388 @@
+@@ -0,0 +1,1371 @@
 +/*
 + * Wine DRI3 interface
 + *
@@ -2813,18 +1950,17 @@ index 0000000..8b86e4a
 +
 +WINE_DEFAULT_DEBUG_CHANNEL(d3d9nine);
 +
-+#include <d3dadapter/d3dadapter9.h>
++#include "dri3.h"
++
 +#include <fcntl.h>
 +#include <unistd.h>
 +#include <pthread.h>
-+
-+#include "dri3.h"
 +
 +#include <X11/Xlib-xcb.h>
 +#include <xcb/dri3.h>
 +#include <xcb/present.h>
 +
-+#include "winbase.h" /* for Sleep */
++#include "winbase.h"
 +
 +#ifdef D3D9NINE_DRI2
 +#include <sys/ioctl.h>
@@ -2851,7 +1987,12 @@ index 0000000..8b86e4a
 +#define GL_GLEXT_PROTOTYPES 1
 +#define EGL_EGLEXT_PROTOTYPES 1
 +#define GL_GLEXT_LEGACY 1
++
++/* workaround for broken ABI on x86_64 due to windef.h */
++#undef APIENTRY
++#undef APIENTRYP
 +#include <GL/gl.h>
++
 +/* workaround gl header bug */
 +#define glBlendColor glBlendColorLEV
 +#define glBlendEquation glBlendEquationLEV
@@ -2860,20 +2001,6 @@ index 0000000..8b86e4a
 +#include <EGL/eglext.h>
 +#include <libdrm/drm_fourcc.h>
 +#include <libdrm/drm.h>
-+/*GLAPI void GLAPIENTRY glFlush( void );
-+
-+GLAPI void APIENTRY glGenFramebuffers (GLsizei n, GLuint *framebuffers);
-+GLAPI void APIENTRY glBindFramebufferEXT (GLenum target, GLuint framebuffer);
-+GLAPI void APIENTRY glBlitFramebuffer (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-+GLAPI void APIENTRY glFramebufferTexture2DEXT (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-+GLAPI void APIENTRY glBindFramebuffer (GLenum target, GLuint framebuffer);
-+GLAPI void APIENTRY glFramebufferTexture2D (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-+GLAPI void APIENTRY glDeleteTexturesEXT (GLsizei n, const GLuint *textures);
-+EGLAPI EGLBoolean EGLAPIENTRY eglDestroyImageKHR (EGLDisplay dpy, EGLImageKHR image);*/
-+
-+typedef void (APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, GLeglImageOES image);
-+typedef EGLImageKHR (EGLAPIENTRYP PFNEGLCREATEIMAGEKHRPROC) (EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLint *attrib_list);
-+typedef EGLDisplay (EGLAPIENTRYP PFNEGLGETPLATFORMDISPLAYEXTPROC) (EGLenum platform, void *native_display, const EGLint *attrib_list);
 +
 +static EGLDisplay display = NULL;
 +static int display_ref = 0;
@@ -2899,8 +2026,8 @@ index 0000000..8b86e4a
 +    PRESENTPixmapPriv *first_present_priv;
 +    int pixmap_present_pending;
 +    BOOL notify_with_serial_pending;
-+    pthread_mutex_t mutex_present; /* protect readind/writing present_priv things */
-+    pthread_mutex_t mutex_xcb_wait;
++    CRITICAL_SECTION mutex_present; /* protect readind/writing present_priv things */
++    CRITICAL_SECTION mutex_xcb_wait;
 +    BOOL xcb_wait;
 +};
 +
@@ -2970,8 +2097,6 @@ index 0000000..8b86e4a
 +}
 +
 +#ifdef D3D9NINE_DRI2
-+
-+/* TODO: We don't free memory properly. When exiting, eglTerminate doesn't work well(crash), and things are freed automatically. Rely on it */
 +
 +BOOL DRI2FallbackInit(Display *dpy, struct DRI2priv **priv)
 +{
@@ -3046,12 +2171,13 @@ index 0000000..8b86e4a
 +            !eglDestroyImageKHR_func)
 +    {
 +        ERR("eglGetProcAddress failed !");
-+        goto clean_egl_display;
++        goto clean_egl;
 +    }
 +
 +    eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 +
-+    *priv = calloc(1, sizeof(struct DRI2priv));
++    *priv = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
++            sizeof(struct DRI2priv));
 +    if (!*priv)
 +        goto clean_egl;
 +    (*priv)->dpy = dpy;
@@ -3064,6 +2190,8 @@ index 0000000..8b86e4a
 +    return TRUE;
 +
 +clean_egl:
++    eglDestroyContext(display, context);
++
 +clean_egl_display:
 +    eglTerminate(display);
 +    eglBindAPI(current_api);
@@ -3089,7 +2217,7 @@ index 0000000..8b86e4a
 +        }
 +    }
 +    eglBindAPI(current_api);
-+    free(priv);
++    HeapFree(GetProcessHeap(), 0, priv);
 +}
 +
 +BOOL DRI2FallbackCheckSupport(Display *dpy)
@@ -3482,14 +2610,14 @@ index 0000000..8b86e4a
 +    if (allow_other_threads)
 +    {
 +        present_priv->xcb_wait = TRUE;
-+        pthread_mutex_lock(&present_priv->mutex_xcb_wait);
-+        pthread_mutex_unlock(&present_priv->mutex_present);
++        EnterCriticalSection(&present_priv->mutex_xcb_wait);
++        LeaveCriticalSection(&present_priv->mutex_present);
 +    }
 +    ev = xcb_wait_for_special_event(present_priv->xcb_connection, present_priv->special_event);
 +    if (allow_other_threads)
 +    {
-+        pthread_mutex_unlock(&present_priv->mutex_xcb_wait);
-+        pthread_mutex_lock(&present_priv->mutex_present);
++        LeaveCriticalSection(&present_priv->mutex_xcb_wait);
++        EnterCriticalSection(&present_priv->mutex_present);
 +        present_priv->xcb_wait = FALSE;
 +    }
 +    if (!ev)
@@ -3519,14 +2647,17 @@ index 0000000..8b86e4a
 +
 +BOOL PRESENTInit(Display *dpy, PRESENTpriv **present_priv)
 +{
-+    *present_priv = (PRESENTpriv *) calloc(1, sizeof(PRESENTpriv));
++    *present_priv = (PRESENTpriv *) HeapAlloc(GetProcessHeap(),
++            HEAP_ZERO_MEMORY, sizeof(PRESENTpriv));
++
 +    if (!*present_priv)
 +        return FALSE;
 +
 +    (*present_priv)->xcb_connection = create_xcb_connection(dpy);
 +    (*present_priv)->xcb_connection_bis = create_xcb_connection(dpy);
-+    pthread_mutex_init(&(*present_priv)->mutex_present, NULL);
-+    pthread_mutex_init(&(*present_priv)->mutex_xcb_wait, NULL);
++
++    InitializeCriticalSection(&(*present_priv)->mutex_present);
++    InitializeCriticalSection(&(*present_priv)->mutex_xcb_wait);
 +    return TRUE;
 +}
 +
@@ -3544,8 +2675,8 @@ index 0000000..8b86e4a
 +    {
 +        xcb_present_notify_msc(present_priv->xcb_connection, present_priv->window, 0, 0, 0, 0);
 +        xcb_flush(present_priv->xcb_connection);
-+        pthread_mutex_lock(&present_priv->mutex_xcb_wait);
-+        pthread_mutex_unlock(&present_priv->mutex_xcb_wait);
++        EnterCriticalSection(&present_priv->mutex_xcb_wait);
++        LeaveCriticalSection(&present_priv->mutex_xcb_wait);
 +        /* the problem here is that we don't have access to the event the other thread got.
 +         * It is either presented event, idle event or notify event.
 +         */
@@ -3687,7 +2818,7 @@ index 0000000..8b86e4a
 +{
 +    PRESENTPixmapPriv *current = NULL;
 +
-+    pthread_mutex_lock(&present_priv->mutex_present);
++    EnterCriticalSection(&present_priv->mutex_present);
 +
 +    PRESENTForceReleases(present_priv);
 +
@@ -3696,7 +2827,7 @@ index 0000000..8b86e4a
 +    {
 +        PRESENTPixmapPriv *next = current->next;
 +        PRESENTDestroyPixmapContent(dpy, current);
-+        free(current);
++        HeapFree(GetProcessHeap(), 0, current);
 +        current = next;
 +    }
 +
@@ -3704,11 +2835,11 @@ index 0000000..8b86e4a
 +
 +    xcb_disconnect(present_priv->xcb_connection);
 +    xcb_disconnect(present_priv->xcb_connection_bis);
-+    pthread_mutex_unlock(&present_priv->mutex_present);
-+    pthread_mutex_destroy(&present_priv->mutex_present);
-+    pthread_mutex_destroy(&present_priv->mutex_xcb_wait);
++    LeaveCriticalSection(&present_priv->mutex_present);
++    DeleteCriticalSection(&present_priv->mutex_present);
++    DeleteCriticalSection(&present_priv->mutex_xcb_wait);
 +
-+    free(present_priv);
++    HeapFree(GetProcessHeap(), 0, present_priv);
 +}
 +
 +BOOL PRESENTPixmapInit(PRESENTpriv *present_priv, Pixmap pixmap, PRESENTPixmapPriv **present_pixmap_priv)
@@ -3722,13 +2853,15 @@ index 0000000..8b86e4a
 +    if (!reply)
 +        return FALSE;
 +
-+    *present_pixmap_priv = (PRESENTPixmapPriv *) calloc(1, sizeof(PRESENTPixmapPriv));
++    *present_pixmap_priv = (PRESENTPixmapPriv *) HeapAlloc(GetProcessHeap(),
++            HEAP_ZERO_MEMORY, sizeof(PRESENTPixmapPriv));
++
 +    if (!*present_pixmap_priv)
 +    {
 +        free(reply);
 +        return FALSE;
 +    }
-+    pthread_mutex_lock(&present_priv->mutex_present);
++    EnterCriticalSection(&present_priv->mutex_present);
 +
 +    (*present_pixmap_priv)->released = TRUE;
 +    (*present_pixmap_priv)->pixmap = pixmap;
@@ -3746,7 +2879,7 @@ index 0000000..8b86e4a
 +    (*present_pixmap_priv)->serial = present_priv->last_serial_given;
 +    present_priv->first_present_priv = *present_pixmap_priv;
 +
-+    pthread_mutex_unlock(&present_priv->mutex_present);
++    LeaveCriticalSection(&present_priv->mutex_present);
 +    return TRUE;
 +}
 +
@@ -3772,7 +2905,7 @@ index 0000000..8b86e4a
 +    EGLenum current_api = 0;
 +    int status;
 +
-+    pthread_mutex_lock(&present_priv->mutex_present);
++    EnterCriticalSection(&present_priv->mutex_present);
 +
 +    pixmap = XCreatePixmap(dri2_priv->dpy, root, width, height, 24);
 +    if (!pixmap)
@@ -3847,7 +2980,9 @@ index 0000000..8b86e4a
 +
 +    eglMakeCurrent(dri2_priv->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 +
-+    *present_pixmap_priv = (PRESENTPixmapPriv *) calloc(1, sizeof(PRESENTPixmapPriv));
++    *present_pixmap_priv = (PRESENTPixmapPriv *) HeapAlloc(GetProcessHeap(),
++             HEAP_ZERO_MEMORY, sizeof(PRESENTPixmapPriv));
++
 +    if (!*present_pixmap_priv)
 +        goto fail;
 +
@@ -3871,12 +3006,12 @@ index 0000000..8b86e4a
 +
 +    eglBindAPI(current_api);
 +
-+    pthread_mutex_unlock(&present_priv->mutex_present);
++    LeaveCriticalSection(&present_priv->mutex_present);
 +    return TRUE;
 +fail:
 +    eglMakeCurrent(dri2_priv->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 +    eglBindAPI(current_api);
-+    pthread_mutex_unlock(&present_priv->mutex_present);
++    LeaveCriticalSection(&present_priv->mutex_present);
 +    return FALSE;
 +}
 +
@@ -3887,11 +3022,11 @@ index 0000000..8b86e4a
 +    PRESENTpriv *present_priv = present_pixmap_priv->present_priv;
 +    PRESENTPixmapPriv *current;
 +
-+    pthread_mutex_lock(&present_priv->mutex_present);
++    EnterCriticalSection(&present_priv->mutex_present);
 +
 +    if (!present_pixmap_priv->released || present_pixmap_priv->present_complete_pending)
 +    {
-+        pthread_mutex_unlock(&present_priv->mutex_present);
++        LeaveCriticalSection(&present_priv->mutex_present);
 +        return FALSE;
 +    }
 +
@@ -3907,8 +3042,8 @@ index 0000000..8b86e4a
 +    current->next = present_pixmap_priv->next;
 +free_priv:
 +    PRESENTDestroyPixmapContent(dpy, present_pixmap_priv);
-+    free(present_pixmap_priv);
-+    pthread_mutex_unlock(&present_priv->mutex_present);
++    HeapFree(GetProcessHeap(), 0, present_pixmap_priv);
++    LeaveCriticalSection(&present_priv->mutex_present);
 +    return TRUE;
 +}
 +
@@ -3920,11 +3055,11 @@ index 0000000..8b86e4a
 +    uint32_t v = 0;
 +    xcb_gcontext_t gc;
 +
-+    pthread_mutex_lock(&present_priv->mutex_present);
++    EnterCriticalSection(&present_priv->mutex_present);
 +
 +    if (!present_priv->window)
 +    {
-+        pthread_mutex_unlock(&present_priv->mutex_present);
++        LeaveCriticalSection(&present_priv->mutex_present);
 +        return FALSE;
 +    }
 +
@@ -3938,13 +3073,13 @@ index 0000000..8b86e4a
 +
 +    error = xcb_request_check(present_priv->xcb_connection, cookie);
 +    xcb_free_gc(present_priv->xcb_connection, gc);
-+    pthread_mutex_unlock(&present_priv->mutex_present);
++    LeaveCriticalSection(&present_priv->mutex_present);
 +    return (error != NULL);
 +}
 +
 +BOOL PRESENTPixmap(Display *dpy, XID window, PRESENTPixmapPriv *present_pixmap_priv,
-+        D3DPRESENT_PARAMETERS *pPresentationParameters, const RECT *pSourceRect,
-+        const RECT *pDestRect, const RGNDATA *pDirtyRegion)
++        const UINT PresentationInterval, const BOOL PresentAsync, const BOOL SwapEffectCopy,
++        const RECT *pSourceRect, const RECT *pDestRect, const RGNDATA *pDirtyRegion)
 +{
 +    PRESENTpriv *present_priv = present_pixmap_priv->present_priv;
 +#ifdef D3D9NINE_DRI2
@@ -3958,7 +3093,7 @@ index 0000000..8b86e4a
 +    int16_t x_off, y_off;
 +    uint32_t options = XCB_PRESENT_OPTION_NONE;
 +
-+    pthread_mutex_lock(&present_priv->mutex_present);
++    EnterCriticalSection(&present_priv->mutex_present);
 +
 +    if (window != present_priv->window)
 +        PRESENTPrivChangeWindow(present_priv, window);
@@ -3966,7 +3101,7 @@ index 0000000..8b86e4a
 +    if (!window)
 +    {
 +        ERR("ERROR: Try to Present a pixmap on a NULL window\n");
-+        pthread_mutex_unlock(&present_priv->mutex_present);
++        LeaveCriticalSection(&present_priv->mutex_present);
 +        return FALSE;
 +    }
 +
@@ -3974,7 +3109,7 @@ index 0000000..8b86e4a
 +    if (!present_pixmap_priv->released || present_pixmap_priv->present_complete_pending)
 +    {
 +        ERR("FATAL ERROR: Trying to Present a pixmap not released\n");
-+        pthread_mutex_unlock(&present_priv->mutex_present);
++        LeaveCriticalSection(&present_priv->mutex_present);
 +        return FALSE;
 +    }
 +#ifdef D3D9NINE_DRI2
@@ -4000,27 +3135,13 @@ index 0000000..8b86e4a
 +    }
 +#endif
 +    target_msc = present_priv->last_msc;
-+    switch(pPresentationParameters->PresentationInterval)
-+    {
-+        case D3DPRESENT_INTERVAL_DEFAULT:
-+        case D3DPRESENT_INTERVAL_ONE:
-+            presentationInterval = 1;
-+            break;
-+        case D3DPRESENT_INTERVAL_TWO:
-+            presentationInterval = 2;
-+            break;
-+        case D3DPRESENT_INTERVAL_THREE:
-+            presentationInterval = 3;
-+            break;
-+        case D3DPRESENT_INTERVAL_FOUR:
-+            presentationInterval = 4;
-+            break;
-+        case D3DPRESENT_INTERVAL_IMMEDIATE:
-+        default:
-+            presentationInterval = 0;
-+            options |= XCB_PRESENT_OPTION_ASYNC | XCB_PRESENT_OPTION_COPY;
-+            break;
-+    }
++
++    presentationInterval = PresentationInterval;
++    if (PresentAsync)
++        options |= XCB_PRESENT_OPTION_ASYNC | XCB_PRESENT_OPTION_COPY;
++    if (SwapEffectCopy)
++        options |= XCB_PRESENT_OPTION_COPY;
++
 +    target_msc += presentationInterval * (present_priv->pixmap_present_pending + 1);
 +
 +    /* Note: PRESENT defines some way to do partial copy:
@@ -4071,7 +3192,9 @@ index 0000000..8b86e4a
 +        xcb_xfixes_create_region(present_priv->xcb_connection_bis, valid, 1, &rect_update);
 +        if (pDirtyRegion && pDirtyRegion->rdh.nCount)
 +        {
-+            rect_updates = (void *) calloc(pDirtyRegion->rdh.nCount, sizeof(xcb_rectangle_t));
++            rect_updates = (void *) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
++                    sizeof(xcb_rectangle_t) * pDirtyRegion->rdh.nCount);
++
 +            for (i = 0; i < pDirtyRegion->rdh.nCount; i++)
 +            {
 +                RECT rc;
@@ -4083,12 +3206,11 @@ index 0000000..8b86e4a
 +                memcpy(rect_updates + i * sizeof(xcb_rectangle_t), &rect_update, sizeof(xcb_rectangle_t));
 +            }
 +            xcb_xfixes_create_region(present_priv->xcb_connection_bis, update, pDirtyRegion->rdh.nCount, rect_updates);
-+            free(rect_updates);
++            HeapFree(GetProcessHeap(), 0, rect_updates);
 +        } else
 +            xcb_xfixes_create_region(present_priv->xcb_connection_bis, update, 1, &rect_update);
 +    }
-+    if (pPresentationParameters->SwapEffect == D3DSWAPEFFECT_COPY)
-+        options |= XCB_PRESENT_OPTION_COPY;
++
 +    cookie = xcb_present_pixmap_checked(present_priv->xcb_connection_bis,
 +            window, present_pixmap_priv->pixmap, present_pixmap_priv->serial,
 +            valid, update, x_off, y_off, None, None, None, options,
@@ -4112,7 +3234,7 @@ index 0000000..8b86e4a
 +        if (!reply)
 +        {
 +            ERR("Error querying window info. Perhaps it doesn't exist anymore\n");
-+            pthread_mutex_unlock(&present_priv->mutex_present);
++            LeaveCriticalSection(&present_priv->mutex_present);
 +            return FALSE;
 +        }
 +        ERR("Pixmap: width=%d, height=%d, depth=%d\n",
@@ -4123,22 +3245,20 @@ index 0000000..8b86e4a
 +                (int) reply->width, (int) reply->height,
 +                (int) reply->depth, (int) reply->x, (int) reply->y);
 +
-+        ERR("Present parameter: PresentationInterval=%d, BackBufferCount=%d, Pending presentations=%d\n",
-+                pPresentationParameters->PresentationInterval,
-+                pPresentationParameters->BackBufferCount,
-+                present_priv->pixmap_present_pending);
++        ERR("Present parameter: PresentationInterval=%d, Pending presentations=%d\n",
++                PresentationInterval, present_priv->pixmap_present_pending);
 +
 +        if (present_pixmap_priv->depth != reply->depth)
 +            ERR("Depths are different. PRESENT needs the pixmap and the window have same depth\n");
 +        free(reply);
-+        pthread_mutex_unlock(&present_priv->mutex_present);
++        LeaveCriticalSection(&present_priv->mutex_present);
 +        return FALSE;
 +    }
 +    present_priv->last_target = target_msc;
 +    present_priv->pixmap_present_pending++;
 +    present_pixmap_priv->present_complete_pending = TRUE;
 +    present_pixmap_priv->released = FALSE;
-+    pthread_mutex_unlock(&present_priv->mutex_present);
++    LeaveCriticalSection(&present_priv->mutex_present);
 +    return TRUE;
 +}
 +
@@ -4146,7 +3266,7 @@ index 0000000..8b86e4a
 +{
 +    PRESENTpriv *present_priv = present_pixmap_priv->present_priv;
 +
-+    pthread_mutex_lock(&present_priv->mutex_present);
++    EnterCriticalSection(&present_priv->mutex_present);
 +
 +    PRESENTflush_events(present_priv, FALSE);
 +
@@ -4158,28 +3278,28 @@ index 0000000..8b86e4a
 +        if (present_priv->xcb_wait)
 +        {
 +            /* we allow only one thread to dispatch events */
-+            pthread_mutex_lock(&present_priv->mutex_xcb_wait);
++            EnterCriticalSection(&present_priv->mutex_xcb_wait);
 +            /* here the other thread got an event but hasn't treated it yet */
-+            pthread_mutex_unlock(&present_priv->mutex_xcb_wait);
-+            pthread_mutex_unlock(&present_priv->mutex_present);
++            LeaveCriticalSection(&present_priv->mutex_xcb_wait);
++            LeaveCriticalSection(&present_priv->mutex_present);
 +            Sleep(10); /* Let it treat the event */
-+            pthread_mutex_lock(&present_priv->mutex_present);
++            EnterCriticalSection(&present_priv->mutex_present);
 +        }
 +        else if (!PRESENTwait_events(present_priv, TRUE))
 +        {
-+            pthread_mutex_unlock(&present_priv->mutex_present);
++            LeaveCriticalSection(&present_priv->mutex_present);
 +            return FALSE;
 +        }
 +    }
-+    pthread_mutex_unlock(&present_priv->mutex_present);
++    LeaveCriticalSection(&present_priv->mutex_present);
 +    return TRUE;
 +}
 diff --git a/dlls/d3d9-nine/dri3.h b/dlls/d3d9-nine/dri3.h
 new file mode 100644
-index 0000000..687aee0
+index 0000000..83e647a
 --- /dev/null
 +++ b/dlls/d3d9-nine/dri3.h
-@@ -0,0 +1,86 @@
+@@ -0,0 +1,87 @@
 +/*
 + * Wine X11DRV DRI3 interface
 + *
@@ -4208,6 +3328,7 @@ index 0000000..687aee0
 +#endif
 +
 +#include <X11/Xlib.h>
++#include <wingdi.h>
 +
 +BOOL DRI3CheckExtension(Display *dpy, int major, int minor);
 +
@@ -4260,18 +3381,18 @@ index 0000000..687aee0
 +BOOL PRESENTHelperCopyFront(Display *dpy, PRESENTPixmapPriv *present_pixmap_priv);
 +
 +BOOL PRESENTPixmap(Display *dpy, XID window, PRESENTPixmapPriv *present_pixmap_priv,
-+        D3DPRESENT_PARAMETERS *pPresentationParameters, const RECT *pSourceRect,
-+        const RECT *pDestRect, const RGNDATA *pDirtyRegion);
++        const UINT PresentationInterval, const BOOL PresentAsync, const BOOL SwapEffectCopy,
++        const RECT *pSourceRect, const RECT *pDestRect, const RGNDATA *pDirtyRegion);
 +
 +BOOL PRESENTWaitPixmapReleased(PRESENTPixmapPriv *present_pixmap_priv);
 +
 +#endif /* __WINE_DRI3_H */
 diff --git a/dlls/d3d9-nine/present.c b/dlls/d3d9-nine/present.c
 new file mode 100644
-index 0000000..be0811c
+index 0000000..3d21993
 --- /dev/null
 +++ b/dlls/d3d9-nine/present.c
-@@ -0,0 +1,1484 @@
+@@ -0,0 +1,1592 @@
 +/*
 + * Wine ID3DAdapter9 support functions
 + *
@@ -4303,7 +3424,6 @@ index 0000000..be0811c
 +
 +WINE_DEFAULT_DEBUG_CHANNEL(d3d9nine);
 +
-+#include <d3dadapter/d3dadapter9.h>
 +#include <d3dadapter/drm.h>
 +#include <X11/Xutil.h>
 +
@@ -4405,6 +3525,10 @@ index 0000000..be0811c
 +    BOOL drop_wnd_messages;
 +    BOOL no_window_changes;
 +    Display *gdi_display;
++
++    UINT present_interval;
++    BOOL present_async;
++    BOOL present_swapeffectcopy;
 +    struct d3d_drawable *d3d;
 +};
 +
@@ -4583,19 +3707,32 @@ index 0000000..be0811c
 +    {
 +        *out = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
 +                sizeof(struct D3DWindowBuffer));
-+        DRI2FallbackPRESENTPixmap(This->present_priv, This->dri2_priv,
++        if (!DRI2FallbackPRESENTPixmap(This->present_priv, This->dri2_priv,
 +                dmaBufFd, width, height, stride, depth,
-+                bpp, &((*out)->present_pixmap_priv));
++                bpp, &((*out)->present_pixmap_priv)))
++        {
++            ERR("DRI2FallbackPRESENTPixmap failed\n");
++            HeapFree(GetProcessHeap(), 0, *out);
++            return D3DERR_DRIVERINTERNALERROR;
++        }
 +        return D3D_OK;
 +    }
 +#endif
 +    if (!DRI3PixmapFromDmaBuf(This->gdi_display, DefaultScreen(This->gdi_display),
 +            dmaBufFd, width, height, stride, depth, bpp, &pixmap))
++    {
++        ERR("DRI3PixmapFromDmaBuf failed\n");
 +        return D3DERR_DRIVERINTERNALERROR;
++    }
 +
 +    *out = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
 +            sizeof(struct D3DWindowBuffer));
-+    PRESENTPixmapInit(This->present_priv, pixmap, &((*out)->present_pixmap_priv));
++    if (!PRESENTPixmapInit(This->present_priv, pixmap, &((*out)->present_pixmap_priv)))
++    {
++        ERR("PRESENTPixmapInit failed\n");
++        HeapFree(GetProcessHeap(), 0, *out);
++        return D3DERR_DRIVERINTERNALERROR;
++    }
 +    return D3D_OK;
 +}
 +
@@ -4613,7 +3750,11 @@ index 0000000..be0811c
 +static HRESULT WINAPI DRI3Present_WaitBufferReleased(struct DRI3Present *This,
 +        struct D3DWindowBuffer *buffer)
 +{
-+    PRESENTWaitPixmapReleased(buffer->present_pixmap_priv);
++    if(!PRESENTWaitPixmapReleased(buffer->present_pixmap_priv))
++    {
++        ERR("PRESENTWaitPixmapReleased failed\n");
++        return D3DERR_DRIVERINTERNALERROR;
++    }
 +    return D3D_OK;
 +}
 +
@@ -4669,7 +3810,8 @@ index 0000000..be0811c
 +    }
 +
 +    if (!PRESENTPixmap(This->gdi_display, d3d->drawable, buffer->present_pixmap_priv,
-+            &This->params, pSourceRect, pDestRect, pDirtyRegion))
++            This->present_interval, This->present_async, This->present_swapeffectcopy,
++            pSourceRect, pDestRect, pDirtyRegion))
 +    {
 +        release_d3d_drawable(d3d);
 +        return D3DERR_DRIVERINTERNALERROR;
@@ -4934,6 +4076,14 @@ index 0000000..be0811c
 +    DEVMODEW current_mode;
 +    LONG hr;
 +
++    /* Filter invalid resolution */
++    if (!new_mode->dmPelsWidth || !new_mode->dmPelsHeight)
++        return D3DERR_INVALIDCALL;
++
++    /* Ignore invalid frequency requested */
++    if (new_mode->dmDisplayFrequency > 1000)
++        new_mode->dmDisplayFrequency = 0;
++
 +    ZeroMemory(&current_mode, sizeof(DEVMODEW));
 +    current_mode.dmSize = sizeof(DEVMODEW);
 +    /* Only change the mode if necessary. */
@@ -5002,6 +4152,7 @@ index 0000000..be0811c
 +        current_mode.dmSize = sizeof(current_mode);
 +        if (!present->ex &&
 +            !present->params.Windowed &&
++            present->params.hDeviceWindow &&
 +            EnumDisplaySettingsW(present->devname, ENUM_CURRENT_SETTINGS, &current_mode) &&
 +            (current_mode.dmPelsWidth != present->params.BackBufferWidth ||
 +             current_mode.dmPelsHeight != present->params.BackBufferHeight))
@@ -5196,6 +4347,9 @@ index 0000000..be0811c
 +
 +        if (!params->Windowed)
 +        {
++            TRACE("Setting fullscreen mode: %dx%d@%d\n", params->BackBufferWidth,
++                     params->BackBufferHeight, params->FullScreen_RefreshRateInHz);
++
 +            /* switch display mode */
 +            ZeroMemory(&new_mode, sizeof(DEVMODEW));
 +            new_mode.dmPelsWidth = params->BackBufferWidth;
@@ -5208,14 +4362,24 @@ index 0000000..be0811c
 +            }
 +            new_mode.dmSize = sizeof(DEVMODEW);
 +            hr = DRI3Present_ChangeDisplaySettingsIfNeccessary(This, &new_mode);
-+        }
-+        else
-+        {
-+            hr = DRI3Present_ChangeDisplaySettingsIfNeccessary(This, &This->initial_mode);
-+        }
++            if (FAILED(hr))
++                return hr;
 +
-+        if (hr != D3D_OK)
-+            return hr;
++            /* Dirty as BackBufferWidth and BackBufferHeight hasn't been set yet */
++            This->resolution_mismatch = FALSE;
++        }
++        else if(!This->params.Windowed && params->Windowed)
++        {
++            TRACE("Setting fullscreen mode: %dx%d@%d\n", This->initial_mode.dmPelsWidth,
++                    This->initial_mode.dmPelsHeight, This->initial_mode.dmDisplayFrequency);
++
++            hr = DRI3Present_ChangeDisplaySettingsIfNeccessary(This, &This->initial_mode);
++            if (FAILED(hr))
++                return hr;
++
++            /* Dirty as BackBufferWidth and BackBufferHeight hasn't been set yet */
++            This->resolution_mismatch = FALSE;
++        }
 +
 +        if (This->params.Windowed)
 +        {
@@ -5225,9 +4389,7 @@ index 0000000..be0811c
 +                if (!nine_register_window(focus_window, This))
 +                    return D3DERR_INVALIDCALL;
 +
-+                /* Wine thinks to always call SetWindowPos */
-+                if (This->focus_wnd != params->hDeviceWindow)
-+                    SetWindowPos(focus_window, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
++                SetWindowPos(focus_window, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 +
 +                setup_fullscreen_window(This, params->hDeviceWindow,
 +                        params->BackBufferWidth, params->BackBufferHeight);
@@ -5260,6 +4422,10 @@ index 0000000..be0811c
 +    {
 +        move_fullscreen_window(This, params->hDeviceWindow, params->BackBufferWidth, params->BackBufferHeight);
 +    }
++    else
++    {
++        TRACE("Nothing changed.\n");
++    }
 +    if (!params->BackBufferWidth || !params->BackBufferHeight) {
 +        if (!params->Windowed)
 +            return D3DERR_INVALIDCALL;
@@ -5274,12 +4440,42 @@ index 0000000..be0811c
 +            params->BackBufferHeight = rect.bottom - rect.top;
 +    }
 +
++    /* Set as last in case of failed reset those aren't updated */
 +    This->params.BackBufferWidth = params->BackBufferWidth;
 +    This->params.BackBufferHeight = params->BackBufferHeight;
 +    This->params.BackBufferFormat = params->BackBufferFormat;
 +    This->params.BackBufferCount = params->BackBufferCount;
 +    This->params.MultiSampleType = params->MultiSampleType;
 +    This->params.MultiSampleQuality = params->MultiSampleQuality;
++
++    /* update fields for PresentPixmap */
++    switch(This->params.PresentationInterval)
++    {
++        case D3DPRESENT_INTERVAL_DEFAULT:
++        case D3DPRESENT_INTERVAL_ONE:
++            This->present_interval = 1;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_TWO:
++            This->present_interval = 2;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_THREE:
++            This->present_interval = 3;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_FOUR:
++            This->present_interval = 4;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_IMMEDIATE:
++        default:
++            This->present_interval = 0;
++            This->present_async = TRUE;
++            break;
++    }
++
++    This->present_swapeffectcopy = This->params.SwapEffect == D3DSWAPEFFECT_COPY;
 +
 +    return D3D_OK;
 +}
@@ -5288,7 +4484,7 @@ index 0000000..be0811c
 +
 +static HRESULT DRI3Present_new(Display *gdi_display, const WCHAR *devname,
 +        D3DPRESENT_PARAMETERS *params, HWND focus_wnd, struct DRI3Present **out,
-+        boolean ex)
++        boolean ex, boolean no_window_changes)
 +{
 +    struct DRI3Present *This;
 +    HWND focus_window;
@@ -5315,7 +4511,7 @@ index 0000000..be0811c
 +    This->refs = 1;
 +    This->focus_wnd = focus_wnd;
 +    This->ex = ex;
-+    This->no_window_changes = params->Flags & D3DCREATE_NOWINDOWCHANGES;
++    This->no_window_changes = no_window_changes;
 +
 +    /* store current resolution */
 +    ZeroMemory(&(This->initial_mode), sizeof(This->initial_mode));
@@ -5331,9 +4527,7 @@ index 0000000..be0811c
 +        if (!nine_register_window(focus_window, This))
 +            return D3DERR_INVALIDCALL;
 +
-+        /* Wine thinks to always call SetWindowPos */
-+        if (This->focus_wnd != params->hDeviceWindow)
-+            SetWindowPos(focus_window, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
++        SetWindowPos(focus_window, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 +
 +        /* switch display mode */
 +        ZeroMemory(&new_mode, sizeof(DEVMODEW));
@@ -5355,9 +4549,12 @@ index 0000000..be0811c
 +            HeapFree(GetProcessHeap(), 0, This);
 +            return hr;
 +        }
++
++        /* Dirty as BackBufferWidth and BackBufferHeight hasn't been set yet */
++        This->resolution_mismatch = FALSE;
++
 +        setup_fullscreen_window(This, params->hDeviceWindow,
 +                params->BackBufferWidth, params->BackBufferHeight);
-+
 +    } else {
 +        GetClientRect(params->hDeviceWindow, &rect);
 +        if (!params->BackBufferWidth || !params->BackBufferHeight) {
@@ -5372,12 +4569,41 @@ index 0000000..be0811c
 +
 +    This->params = *params;
 +
++    /* update fields for PresentPixmap */
++    switch(This->params.PresentationInterval)
++    {
++        case D3DPRESENT_INTERVAL_DEFAULT:
++        case D3DPRESENT_INTERVAL_ONE:
++            This->present_interval = 1;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_TWO:
++            This->present_interval = 2;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_THREE:
++            This->present_interval = 3;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_FOUR:
++            This->present_interval = 4;
++            This->present_async = FALSE;
++            break;
++        case D3DPRESENT_INTERVAL_IMMEDIATE:
++        default:
++            This->present_interval = 0;
++            This->present_async = TRUE;
++            break;
++    }
++
++    This->present_swapeffectcopy = This->params.SwapEffect == D3DSWAPEFFECT_COPY;
++
 +    strcpyW(This->devname, devname);
 +
 +    PRESENTInit(gdi_display, &(This->present_priv));
 +#ifdef D3D9NINE_DRI2
-+    if (is_dri2_fallback)
-+        DRI2FallbackInit(gdi_display, &(This->dri2_priv));
++    if (is_dri2_fallback && !DRI2FallbackInit(gdi_display, &(This->dri2_priv)))
++        return D3DERR_INVALIDCALL;
 +#endif
 +    *out = This;
 +
@@ -5395,6 +4621,7 @@ index 0000000..be0811c
 +    struct DRI3Present **present_backends;
 +    unsigned npresent_backends;
 +    Display *gdi_display;
++    boolean no_window_changes;
 +};
 +
 +static ULONG WINAPI DRI3PresentGroup_AddRef(struct DRI3PresentGroup *This)
@@ -5469,7 +4696,8 @@ index 0000000..be0811c
 +{
 +    HRESULT hr;
 +    hr = DRI3Present_new(This->gdi_display, This->present_backends[0]->devname,
-+            pPresentationParameters, 0, (struct DRI3Present **)ppPresent, This->ex);
++            pPresentationParameters, 0, (struct DRI3Present **)ppPresent,
++            This->ex, This->no_window_changes);
 +
 +    return hr;
 +}
@@ -5493,7 +4721,7 @@ index 0000000..be0811c
 +
 +HRESULT present_create_present_group(Display *gdi_display, const WCHAR *device_name,
 +        UINT adapter, HWND focus_wnd, D3DPRESENT_PARAMETERS *params,
-+        unsigned nparams, ID3DPresentGroup **group, boolean ex)
++        unsigned nparams, ID3DPresentGroup **group, boolean ex, DWORD BehaviorFlags)
 +{
 +    struct DRI3PresentGroup *This;
 +    DISPLAY_DEVICEW dd;
@@ -5513,6 +4741,7 @@ index 0000000..be0811c
 +    This->refs = 1;
 +    This->ex = ex;
 +    This->npresent_backends = nparams;
++    This->no_window_changes = !!(BehaviorFlags & D3DCREATE_NOWINDOWCHANGES);
 +    This->present_backends = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
 +            This->npresent_backends * sizeof(struct DRI3Present *));
 +    if (!This->present_backends)
@@ -5538,7 +4767,7 @@ index 0000000..be0811c
 +
 +        /* create an ID3DPresent for it */
 +        hr = DRI3Present_new(gdi_display, dd.DeviceName, &params[i],
-+                focus_wnd, &This->present_backends[i], ex);
++                focus_wnd, &This->present_backends[i], ex, This->no_window_changes);
 +        if (FAILED(hr))
 +        {
 +            DRI3PresentGroup_Release(This);
@@ -5758,7 +4987,7 @@ index 0000000..be0811c
 +}
 diff --git a/dlls/d3d9-nine/present.h b/dlls/d3d9-nine/present.h
 new file mode 100644
-index 0000000..0f0bca9
+index 0000000..a551687
 --- /dev/null
 +++ b/dlls/d3d9-nine/present.h
 @@ -0,0 +1,40 @@
@@ -5793,7 +5022,7 @@ index 0000000..0f0bca9
 +
 +HRESULT present_create_present_group(Display *gdi_display, const WCHAR *device_name, UINT adapter,
 +        HWND focus, D3DPRESENT_PARAMETERS *params, unsigned nparams, ID3DPresentGroup **group,
-+        boolean ex);
++        boolean ex, DWORD BehaviorFlags);
 +
 +HRESULT present_create_adapter9(Display *gdi_display, HDC hdc, ID3DAdapter9 **adapter);
 +
@@ -5802,6 +5031,135 @@ index 0000000..0f0bca9
 +BOOL enable_device_vtable_wrapper(void);
 +
 +#endif /* __WINE_PRESENT_H */
+diff --git a/dlls/d3d9-nine/shader_validator.c b/dlls/d3d9-nine/shader_validator.c
+new file mode 100644
+index 0000000..a06fef9
+--- /dev/null
++++ b/dlls/d3d9-nine/shader_validator.c
+@@ -0,0 +1,88 @@
++/*
++ * Direct3D 9 ShaderValidator
++ *
++ * Copyright 2016 Patrick Rudolph
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
++ *
++ */
++#include "wine/debug.h"
++WINE_DEFAULT_DEBUG_CHANNEL(d3d9nine);
++
++#include "winbase.h"
++
++#include "shader_validator.h"
++
++static HRESULT WINAPI IDirect3DShaderValidator9Impl_QueryInterface(IDirect3DShaderValidator9Impl *This,
++        REFIID riid, LPVOID* ppobj)
++{
++    /* TODO: AddRef(iface). */
++    *ppobj = This;
++    FIXME("This=%p, riid=%s, object=%p.\n", This, debugstr_guid(riid), ppobj);
++
++    return S_OK;
++}
++
++static ULONG WINAPI IDirect3DShaderValidator9Impl_AddRef(IDirect3DShaderValidator9Impl *This)
++{
++    ULONG ref = InterlockedIncrement(&This->ref);
++    FIXME("This=%p increasing refcount to %u.\n", This, ref);
++
++    return ref;
++}
++
++static ULONG WINAPI IDirect3DShaderValidator9Impl_Release(IDirect3DShaderValidator9Impl *This)
++{
++    ULONG ref = InterlockedDecrement(&This->ref);
++    FIXME("This=%p decreasing refcount to %u.\n", This, ref);
++
++    if (ref == 0)
++        HeapFree(GetProcessHeap(), 0, This);
++
++    return ref;
++}
++
++static LONG WINAPI IDirect3DShaderValidator9Impl_Begin(IDirect3DShaderValidator9Impl *This,
++        void* callback, void* unknown1, ULONG unknown2)
++{
++    FIXME("This=%p, callback=%p, unknown1=%p, unknown2=%u\n", This, callback, unknown1, unknown2);
++    return 1;
++}
++
++static LONG WINAPI IDirect3DShaderValidator9Impl_Instruction(IDirect3DShaderValidator9Impl *This,
++        const char* unknown1, unsigned int unknown2, const unsigned long* unknown3, unsigned int unknown4)
++{
++    FIXME("This=%p, unknown1=%p, unknown2=%u, unknown3=%p, unknown4=%u\n", This, unknown1, unknown2, unknown3, unknown4);
++    return 1;
++}
++
++static LONG WINAPI IDirect3DShaderValidator9Impl_End(IDirect3DShaderValidator9Impl *This)
++{
++    FIXME("This=%p\n", This);
++    return 1;
++}
++
++const void *IDirect3DShaderValidator9Vtbl[] =
++{
++    /* IUnknown */
++    IDirect3DShaderValidator9Impl_QueryInterface,
++    IDirect3DShaderValidator9Impl_AddRef,
++    IDirect3DShaderValidator9Impl_Release,
++    /* IDirect3DShaderValidator9 */
++    IDirect3DShaderValidator9Impl_Begin,
++    IDirect3DShaderValidator9Impl_Instruction,
++    IDirect3DShaderValidator9Impl_End
++};
++
+diff --git a/dlls/d3d9-nine/shader_validator.h b/dlls/d3d9-nine/shader_validator.h
+new file mode 100644
+index 0000000..a85fee1
+--- /dev/null
++++ b/dlls/d3d9-nine/shader_validator.h
+@@ -0,0 +1,29 @@
++/*
++ * Direct3D 9 ShaderValidator
++ *
++ * Copyright 2016 Patrick Rudolph
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
++ *
++ */
++
++typedef struct IDirect3DShaderValidator9Impl
++{
++    /* IUnknown fields */
++    void *lpVtbl;
++    LONG ref;
++} IDirect3DShaderValidator9Impl;
++
++const void *IDirect3DShaderValidator9Vtbl[];
 diff --git a/dlls/d3d9-nine/version.rc b/dlls/d3d9-nine/version.rc
 new file mode 100644
 index 0000000..bfafc2f
@@ -6188,91 +5546,6 @@ index d7ff990..2e5312c 100644
  };
  
  struct x11drv_escape_flush_gl_drawable
-diff --git a/include/config.h.in b/include/config.h.in
-index 08c9edf..d589434 100644
---- a/include/config.h.in
-+++ b/include/config.h.in
-@@ -4,6 +4,15 @@
- #define __WINE_CONFIG_H
- #ifndef WINE_CROSSTEST
- 
-+/* Whether d3d9-nine DRI2 fallback is compiled */
-+#undef D3D9NINE_DRI2
-+
-+/* Gallium Nine headers cflags */
-+#undef D3D9NINE_HEADERS_CFLAGS
-+
-+/* Gallium Nine module path */
-+#undef D3D9NINE_MODULEPATH
-+
- /* Define to a function attribute for Microsoft hotpatch assembly prefix. */
- #undef DECLSPEC_HOTPATCH
- 
-@@ -98,6 +107,9 @@
- /* Define to 1 if you have the <curses.h> header file. */
- #undef HAVE_CURSES_H
- 
-+/* Whether d3d9-nine.dll is built */
-+#undef HAVE_D3D9NINE
-+
- /* Define if you have the daylight variable */
- #undef HAVE_DAYLIGHT
- 
-@@ -120,6 +132,12 @@
- /* Define to 1 if you have the `dlopen' function. */
- #undef HAVE_DLOPEN
- 
-+/* Define to 1 if you have the <EGL/eglext.h> header file. */
-+#undef HAVE_EGL_EGLEXT_H
-+
-+/* Define to 1 if you have the <EGL/egl.h> header file. */
-+#undef HAVE_EGL_EGL_H
-+
- /* Define to 1 if you have the <elf.h> header file. */
- #undef HAVE_ELF_H
- 
-@@ -237,6 +255,12 @@
- /* Define to 1 if you have the `getuid' function. */
- #undef HAVE_GETUID
- 
-+/* Define to 1 if you have the <GL/glext.h> header file. */
-+#undef HAVE_GL_GLEXT_H
-+
-+/* Define to 1 if you have the <GL/gl.h> header file. */
-+#undef HAVE_GL_GL_H
-+
- /* Define to 1 if you have the `gnutls_hash' function. */
- #undef HAVE_GNUTLS_HASH
- 
-@@ -366,6 +390,12 @@
- /* Define to 1 if you have the `lgammaf' function. */
- #undef HAVE_LGAMMAF
- 
-+/* Define to 1 if you have the <libdrm/drm_fourcc.h> header file. */
-+#undef HAVE_LIBDRM_DRM_FOURCC_H
-+
-+/* Define to 1 if you have the <libdrm/drm.h> header file. */
-+#undef HAVE_LIBDRM_DRM_H
-+
- /* Define to 1 if you have the `gettextpo' library (-lgettextpo). */
- #undef HAVE_LIBGETTEXTPO
- 
-@@ -1251,6 +1281,15 @@
- /* Define to 1 if you have the `vsnprintf' function. */
- #undef HAVE_VSNPRINTF
- 
-+/* Define to 1 if you have the <X11/extensions/dri2proto.h> header file. */
-+#undef HAVE_X11_EXTENSIONS_DRI2PROTO_H
-+
-+/* Define to 1 if you have the <X11/extensions/dri2tokens.h> header file. */
-+#undef HAVE_X11_EXTENSIONS_DRI2TOKENS_H
-+
-+/* Define to 1 if you have the <X11/extensions/extutil.h> header file. */
-+#undef HAVE_X11_EXTENSIONS_EXTUTIL_H
-+
- /* Define to 1 if you have the <X11/extensions/shape.h> header file. */
- #undef HAVE_X11_EXTENSIONS_SHAPE_H
- 
 -- 
 2.10.2
 
