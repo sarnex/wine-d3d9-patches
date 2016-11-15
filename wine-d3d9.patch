@@ -1,6 +1,6 @@
-From bdf72f6920c1ab9a18f25e006327f99c53edfd1f Mon Sep 17 00:00:00 2001
+From f335bfd8199a3d589cae774d065e4c6c6be5ea81 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 9 Nov 2016 13:18:25 -0500
+Date: Mon, 14 Nov 2016 23:14:03 -0500
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -9,13 +9,13 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  dlls/d3d9-nine/Makefile.in        |   15 +
  dlls/d3d9-nine/d3d9-nine.spec     |   14 +
  dlls/d3d9-nine/d3d9_main.c        |  173 ++++
- dlls/d3d9-nine/d3dadapter9.c      |  853 ++++++++++++++++++++
+ dlls/d3d9-nine/d3dadapter9.c      |  853 +++++++++++++++++++
  dlls/d3d9-nine/d3dadapter9.h      |   32 +
  dlls/d3d9-nine/device_wrap.c      |  500 ++++++++++++
  dlls/d3d9-nine/device_wrap.h      |   26 +
- dlls/d3d9-nine/dri3.c             | 1371 ++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/dri3.c             | 1371 +++++++++++++++++++++++++++++++
  dlls/d3d9-nine/dri3.h             |   87 ++
- dlls/d3d9-nine/present.c          | 1592 +++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/present.c          | 1632 +++++++++++++++++++++++++++++++++++++
  dlls/d3d9-nine/present.h          |   40 +
  dlls/d3d9-nine/shader_validator.c |   88 ++
  dlls/d3d9-nine/shader_validator.h |   29 +
@@ -24,7 +24,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  dlls/d3d9-nine/wndproc.h          |   41 +
  dlls/winex11.drv/init.c           |    1 +
  dlls/winex11.drv/x11drv.h         |    1 +
- 19 files changed, 5354 insertions(+)
+ 19 files changed, 5394 insertions(+)
  create mode 100644 dlls/d3d9-nine/Makefile.in
  create mode 100644 dlls/d3d9-nine/d3d9-nine.spec
  create mode 100644 dlls/d3d9-nine/d3d9_main.c
@@ -43,10 +43,10 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 583715a..7f19a7e 100644
+index 8fb0de1..69e09b5 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
+@@ -65,6 +65,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
  AC_ARG_WITH(opencl,    AS_HELP_STRING([--without-opencl],[do not use OpenCL]),
              [if test "x$withval" = "xno"; then ac_cv_header_CL_cl_h=no; ac_cv_header_OpenCL_opencl_h=no; fi])
  AC_ARG_WITH(opengl,    AS_HELP_STRING([--without-opengl],[do not use OpenGL]))
@@ -61,7 +61,7 @@ index 583715a..7f19a7e 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -386,6 +394,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -374,6 +382,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -70,9 +70,9 @@ index 583715a..7f19a7e 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1207,6 +1217,183 @@ OpenGL and Direct3D won't be supported.])
-     WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
-                      [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
+@@ -1157,6 +1167,183 @@ This probably prevents linking to OpenGL. Try deleting the file and restarting c
+     WINE_WARNING_WITH(opengl,[test -n "$opengl_msg"],[$opengl_msg
+ OpenGL and Direct3D won't be supported.])
  
 +    dnl Check for d3d9-nine support
 +    if test "x$with_d3d9_nine" = "xauto" && (test "x$with_d3d9_nine_module" = "xauto" || test "x$with_d3d9_nine_headers_path" = "xauto")
@@ -254,7 +254,7 @@ index 583715a..7f19a7e 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2961,6 +3148,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2879,6 +3066,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -3389,10 +3389,10 @@ index 0000000..83e647a
 +#endif /* __WINE_DRI3_H */
 diff --git a/dlls/d3d9-nine/present.c b/dlls/d3d9-nine/present.c
 new file mode 100644
-index 0000000..3d21993
+index 0000000..91e88f3
 --- /dev/null
 +++ b/dlls/d3d9-nine/present.c
-@@ -0,0 +1,1592 @@
+@@ -0,0 +1,1632 @@
 +/*
 + * Wine ID3DAdapter9 support functions
 + *
@@ -3821,11 +3821,51 @@ index 0000000..3d21993
 +    return D3D_OK;
 +}
 +
++/* Based on wine's wined3d_get_adapter_raster_status. */
 +static HRESULT WINAPI DRI3Present_GetRasterStatus( struct DRI3Present *This,
 +        D3DRASTER_STATUS *pRasterStatus )
 +{
-+    FIXME("(%p, %p), stub!\n", This, pRasterStatus);
-+    return D3DERR_INVALIDCALL;
++    LONGLONG freq_per_frame, freq_per_line;
++    LARGE_INTEGER counter, freq_per_sec;
++    unsigned refresh_rate, height;
++
++    TRACE("This=%p, pRasterStatus=%p\n", This, pRasterStatus);
++
++    if (!QueryPerformanceCounter(&counter) || !QueryPerformanceFrequency(&freq_per_sec))
++        return D3DERR_INVALIDCALL;
++
++    if (This->params.Windowed)
++    {
++        refresh_rate = This->initial_mode.dmDisplayFrequency;
++        height = This->initial_mode.dmPelsHeight;
++    }
++    else
++    {
++        refresh_rate = This->params.FullScreen_RefreshRateInHz;
++        height = This->params.BackBufferHeight;
++    }
++
++    if (refresh_rate == 0)
++        refresh_rate = 60;
++
++    TRACE("refresh_rate=%u, height=%u\n", refresh_rate, height);
++
++    freq_per_frame = freq_per_sec.QuadPart / refresh_rate;
++    /* Assume 20 scan lines in the vertical blank. */
++    freq_per_line = freq_per_frame / (height + 20);
++    pRasterStatus->ScanLine = (counter.QuadPart % freq_per_frame) / freq_per_line;
++    if (pRasterStatus->ScanLine < height)
++        pRasterStatus->InVBlank = FALSE;
++    else
++    {
++        pRasterStatus->ScanLine = 0;
++        pRasterStatus->InVBlank = TRUE;
++    }
++
++    TRACE("Returning fake value, InVBlank %u, ScanLine %u.\n",
++            pRasterStatus->InVBlank, pRasterStatus->ScanLine);
++
++    return D3D_OK;
 +}
 +
 +static HRESULT WINAPI DRI3Present_GetDisplayMode( struct DRI3Present *This,
@@ -5523,7 +5563,7 @@ index 0000000..15f26d4
 +
 +#endif
 diff --git a/dlls/winex11.drv/init.c b/dlls/winex11.drv/init.c
-index 3af1b78..f9abc9b 100644
+index af2fd92..aa13c9f 100644
 --- a/dlls/winex11.drv/init.c
 +++ b/dlls/winex11.drv/init.c
 @@ -365,6 +365,7 @@ static INT X11DRV_ExtEscape( PHYSDEV dev, INT escape, INT in_count, LPCVOID in_d
@@ -5535,10 +5575,10 @@ index 3af1b78..f9abc9b 100644
                  }
                  break;
 diff --git a/dlls/winex11.drv/x11drv.h b/dlls/winex11.drv/x11drv.h
-index d7ff990..2e5312c 100644
+index 5e8d85f..e0796ef 100644
 --- a/dlls/winex11.drv/x11drv.h
 +++ b/dlls/winex11.drv/x11drv.h
-@@ -298,6 +298,7 @@ struct x11drv_escape_get_drawable
+@@ -297,6 +297,7 @@ struct x11drv_escape_get_drawable
      Drawable                 drawable;     /* X drawable */
      Drawable                 gl_drawable;  /* GL drawable */
      int                      pixel_format; /* internal GL pixel format */
