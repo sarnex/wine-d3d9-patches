@@ -1,6 +1,6 @@
-From 47c6efbacdbec144e44f776097355e09eb5e653a Mon Sep 17 00:00:00 2001
+From 867b7d23689d76310a0ff2a54af230cf4cff0ae1 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 2 Nov 2016 11:36:28 -0400
+Date: Wed, 16 Nov 2016 13:09:19 -0500
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>

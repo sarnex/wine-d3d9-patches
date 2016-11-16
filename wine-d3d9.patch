@@ -1,6 +1,6 @@
-From f335bfd8199a3d589cae774d065e4c6c6be5ea81 Mon Sep 17 00:00:00 2001
+From 42ed142174d9da4bd80488a4132db3ead20a5647 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 14 Nov 2016 23:14:03 -0500
+Date: Wed, 16 Nov 2016 13:08:05 -0500
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -43,10 +43,10 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 8fb0de1..69e09b5 100644
+index f981c82..6655281 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -65,6 +65,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
+@@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
  AC_ARG_WITH(opencl,    AS_HELP_STRING([--without-opencl],[do not use OpenCL]),
              [if test "x$withval" = "xno"; then ac_cv_header_CL_cl_h=no; ac_cv_header_OpenCL_opencl_h=no; fi])
  AC_ARG_WITH(opengl,    AS_HELP_STRING([--without-opengl],[do not use OpenGL]))
@@ -61,7 +61,7 @@ index 8fb0de1..69e09b5 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -374,6 +382,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -386,6 +394,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -70,9 +70,9 @@ index 8fb0de1..69e09b5 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1157,6 +1167,183 @@ This probably prevents linking to OpenGL. Try deleting the file and restarting c
-     WINE_WARNING_WITH(opengl,[test -n "$opengl_msg"],[$opengl_msg
- OpenGL and Direct3D won't be supported.])
+@@ -1207,6 +1217,183 @@ OpenGL and Direct3D won't be supported.])
+     WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
+                      [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
  
 +    dnl Check for d3d9-nine support
 +    if test "x$with_d3d9_nine" = "xauto" && (test "x$with_d3d9_nine_module" = "xauto" || test "x$with_d3d9_nine_headers_path" = "xauto")
@@ -254,7 +254,7 @@ index 8fb0de1..69e09b5 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2879,6 +3066,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2963,6 +3150,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -5563,7 +5563,7 @@ index 0000000..15f26d4
 +
 +#endif
 diff --git a/dlls/winex11.drv/init.c b/dlls/winex11.drv/init.c
-index af2fd92..aa13c9f 100644
+index 3af1b78..f9abc9b 100644
 --- a/dlls/winex11.drv/init.c
 +++ b/dlls/winex11.drv/init.c
 @@ -365,6 +365,7 @@ static INT X11DRV_ExtEscape( PHYSDEV dev, INT escape, INT in_count, LPCVOID in_d
@@ -5575,10 +5575,10 @@ index af2fd92..aa13c9f 100644
                  }
                  break;
 diff --git a/dlls/winex11.drv/x11drv.h b/dlls/winex11.drv/x11drv.h
-index 5e8d85f..e0796ef 100644
+index d7ff990..2e5312c 100644
 --- a/dlls/winex11.drv/x11drv.h
 +++ b/dlls/winex11.drv/x11drv.h
-@@ -297,6 +297,7 @@ struct x11drv_escape_get_drawable
+@@ -298,6 +298,7 @@ struct x11drv_escape_get_drawable
      Drawable                 drawable;     /* X drawable */
      Drawable                 gl_drawable;  /* GL drawable */
      int                      pixel_format; /* internal GL pixel format */
