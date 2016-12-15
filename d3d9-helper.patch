@@ -1,6 +1,6 @@
-From 867b7d23689d76310a0ff2a54af230cf4cff0ae1 Mon Sep 17 00:00:00 2001
+From b64dbfc27c91aa343023304ce067ca218102f9cb Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 16 Nov 2016 13:09:19 -0500
+Date: Thu, 15 Dec 2016 16:57:26 -0500
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -18,7 +18,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 programs/winecfg/staging.c
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
-index f1ef7ab..ec7b1ce 100644
+index f1ef7ab1bd..ec7b1cec86 100644
 --- a/dlls/ntdll/loader.c
 +++ b/dlls/ntdll/loader.c
 @@ -92,6 +92,7 @@ struct builtin_load_info
@@ -231,7 +231,7 @@ index f1ef7ab..ec7b1ce 100644
          MESSAGE( "wine: could not load kernel32.dll, status %x\n", status );
          exit(1);
 diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
-index 401d256..ec13e75 100644
+index 401d256f1c..ec13e7542c 100644
 --- a/dlls/ntdll/loadorder.c
 +++ b/dlls/ntdll/loadorder.c
 @@ -290,102 +290,165 @@ static inline enum loadorder get_env_load_order( const WCHAR *module )
@@ -622,7 +622,7 @@ index 401d256..ec13e75 100644
 +    return ret;
 +}
 diff --git a/dlls/ntdll/ntdll_misc.h b/dlls/ntdll/ntdll_misc.h
-index 5e4c39e..921f58e 100644
+index 5e4c39e8bd..921f58e187 100644
 --- a/dlls/ntdll/ntdll_misc.h
 +++ b/dlls/ntdll/ntdll_misc.h
 @@ -203,6 +203,7 @@ enum loadorder
@@ -634,7 +634,7 @@ index 5e4c39e..921f58e 100644
  struct debug_info
  {
 diff --git a/programs/winecfg/Makefile.in b/programs/winecfg/Makefile.in
-index 7b52a69..c86fdd0 100644
+index 7b52a6943e..c86fdd07d0 100644
 --- a/programs/winecfg/Makefile.in
 +++ b/programs/winecfg/Makefile.in
 @@ -11,6 +11,7 @@ C_SRCS = \
@@ -646,7 +646,7 @@ index 7b52a69..c86fdd0 100644
  	winecfg.c \
  	x11drvdlg.c
 diff --git a/programs/winecfg/main.c b/programs/winecfg/main.c
-index b8a85fe..de209a9 100644
+index b8a85fe717..de209a925c 100644
 --- a/programs/winecfg/main.c
 +++ b/programs/winecfg/main.c
 @@ -58,7 +58,7 @@ PropSheetCallback (HWND hWnd, UINT uMsg, LPARAM lParam)
@@ -676,7 +676,7 @@ index b8a85fe..de209a9 100644
       * Fill out the (General) PROPSHEETPAGE data structure 
       * for the property sheet
 diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
-index 0c0b038..f0e370e 100644
+index 0c0b038ff9..f0e370ecd6 100644
 --- a/programs/winecfg/resource.h
 +++ b/programs/winecfg/resource.h
 @@ -45,6 +45,7 @@
@@ -704,7 +704,7 @@ index 0c0b038..f0e370e 100644
 +#define IDC_ENABLE_NATIVE_D3D9       9001
 diff --git a/programs/winecfg/staging.c b/programs/winecfg/staging.c
 new file mode 100644
-index 0000000..ddad850
+index 0000000000..ddad850bf0
 --- /dev/null
 +++ b/programs/winecfg/staging.c
 @@ -0,0 +1,93 @@
@@ -802,7 +802,7 @@ index 0000000..ddad850
 +    return FALSE;
 +}
 diff --git a/programs/winecfg/winecfg.h b/programs/winecfg/winecfg.h
-index 110856a..a949474 100644
+index 110856a536..a94947439c 100644
 --- a/programs/winecfg/winecfg.h
 +++ b/programs/winecfg/winecfg.h
 @@ -87,6 +87,7 @@ INT_PTR CALLBACK AppDlgProc (HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -814,7 +814,7 @@ index 110856a..a949474 100644
  
  /* Drive management  */
 diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
-index 72c3e1b..b9c0afc 100644
+index 72c3e1ba01..b9c0afc005 100644
 --- a/programs/winecfg/winecfg.rc
 +++ b/programs/winecfg/winecfg.rc
 @@ -39,6 +39,7 @@ BEGIN
@@ -842,5 +842,5 @@ index 72c3e1b..b9c0afc 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.10.2
+2.11.0
 

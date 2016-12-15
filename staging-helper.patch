@@ -1,6 +1,6 @@
-From 58f3c1bf2ea32b3decc8914864122bb87e31a685 Mon Sep 17 00:00:00 2001
+From d6c7a12d2750b3e9a3af9cc7e28631e0417b6e01 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 16 Nov 2016 13:07:14 -0500
+Date: Thu, 15 Dec 2016 16:53:43 -0500
 Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -12,7 +12,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  4 files changed, 33 insertions(+)
 
 diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
-index 5068812..0e05a0d 100644
+index 50688123f3..0e05a0dab2 100644
 --- a/dlls/ntdll/loadorder.c
 +++ b/dlls/ntdll/loadorder.c
 @@ -633,8 +633,10 @@ WCHAR* get_redirect( const WCHAR *app_name, const WCHAR *path, BYTE *buffer, ULO
@@ -27,7 +27,7 @@ index 5068812..0e05a0d 100644
      /* and last the hard-coded default */
      ret = NULL;
 diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
-index b94e773..028dbb7 100644
+index b94e773b60..028dbb730b 100644
 --- a/programs/winecfg/resource.h
 +++ b/programs/winecfg/resource.h
 @@ -218,6 +218,7 @@
@@ -39,7 +39,7 @@ index b94e773..028dbb7 100644
  /* About tab */
  #define IDC_ABT_OWNER                8432
 diff --git a/programs/winecfg/staging.c b/programs/winecfg/staging.c
-index a96bdca..7eec5e9 100644
+index a96bdcaab4..7eec5e9608 100644
 --- a/programs/winecfg/staging.c
 +++ b/programs/winecfg/staging.c
 @@ -122,6 +122,23 @@ static void gtk3_set(BOOL status)
@@ -107,7 +107,7 @@ index a96bdca..7eec5e9 100644
          break;
      }
 diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
-index c375217..31cc9ba 100644
+index c375217d71..31cc9bae0d 100644
 --- a/programs/winecfg/winecfg.rc
 +++ b/programs/winecfg/winecfg.rc
 @@ -320,6 +320,7 @@ BEGIN
@@ -119,5 +119,5 @@ index c375217..31cc9ba 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.10.2
+2.11.0
 
