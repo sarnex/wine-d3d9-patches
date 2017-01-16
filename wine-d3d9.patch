@@ -1,6 +1,6 @@
-From f942a3c73cb37784f9f2ac9e6d4ce068bb4ac024 Mon Sep 17 00:00:00 2001
+From 8de68d4357055b86e5ff91dcc9909cc5aaefaf04 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 21 Dec 2016 16:14:57 -0500
+Date: Sun, 15 Jan 2017 23:21:37 -0500
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
