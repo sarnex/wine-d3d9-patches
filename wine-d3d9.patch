@@ -1,7 +1,7 @@
-From 3ce0e28ca6dd02b490ee350a7fca6c50cb58dae7 Mon Sep 17 00:00:00 2001
+From f197c2d14c06483abfaa79d6a094f0a1b983e015 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 25 Jan 2017 15:05:14 -0500
-Subject: [PATCH] Wine D3D9
+Date: Thu, 9 Feb 2017 14:37:55 -0500
+Subject: [PATCH 2/2] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
@@ -43,7 +43,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 3e651ef855..3f937c3bc2 100644
+index 398ab38868..61813c0f04 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -5654,5 +5654,5 @@ index d7ff9901a7..2e5312cc4c 100644
  
  struct x11drv_escape_flush_gl_drawable
 -- 
-2.11.0
+2.11.1
 

@@ -1,6 +1,6 @@
-From 63c64e50fb4a4de2c12ad691e40225899162beb8 Mon Sep 17 00:00:00 2001
+From 87f55edd2325d1af1d535a429744bee838e71464 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 25 Jan 2017 15:05:57 -0500
+Date: Thu, 9 Feb 2017 14:38:47 -0500
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -842,5 +842,5 @@ index 72c3e1ba01..b9c0afc005 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.11.0
+2.11.1
 
