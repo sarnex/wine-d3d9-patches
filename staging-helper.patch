@@ -1,7 +1,7 @@
-From 39b9ba030a156d4bd3985656a368f0ddb55043e6 Mon Sep 17 00:00:00 2001
+From 0c219ef060307274541e79d5c1a34c5b0e3b52a9 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Thu, 9 Feb 2017 14:37:36 -0500
-Subject: [PATCH 1/2] Staging Helper
+Date: Wed, 22 Feb 2017 23:58:43 -0500
+Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---

@@ -1,7 +1,7 @@
-From f197c2d14c06483abfaa79d6a094f0a1b983e015 Mon Sep 17 00:00:00 2001
+From b5707382ebd017eb535b87411d9e32a9368f2ced Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Thu, 9 Feb 2017 14:37:55 -0500
-Subject: [PATCH 2/2] Wine D3D9
+Date: Wed, 22 Feb 2017 23:59:00 -0500
+Subject: [PATCH] Wine Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
@@ -43,7 +43,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 398ab38868..61813c0f04 100644
+index 4a38c3831c..76bcd59180 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -254,7 +254,7 @@ index 398ab38868..61813c0f04 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2973,6 +3160,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2982,6 +3169,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -5642,7 +5642,7 @@ index 3af1b78490..f9abc9b96c 100644
                  }
                  break;
 diff --git a/dlls/winex11.drv/x11drv.h b/dlls/winex11.drv/x11drv.h
-index d7ff9901a7..2e5312cc4c 100644
+index 9974bd7adf..ebeb93d45b 100644
 --- a/dlls/winex11.drv/x11drv.h
 +++ b/dlls/winex11.drv/x11drv.h
 @@ -298,6 +298,7 @@ struct x11drv_escape_get_drawable
