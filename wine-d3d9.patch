@@ -1,30 +1,28 @@
-From b5707382ebd017eb535b87411d9e32a9368f2ced Mon Sep 17 00:00:00 2001
+From 24f4b7f93c75a1e9b0fd38cf70450100c8c18e96 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 22 Feb 2017 23:59:00 -0500
-Subject: [PATCH] Wine Helper
+Date: Sat, 18 Mar 2017 16:54:51 -0400
+Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
- configure.ac                      |  188 +++++
+ configure.ac                      |  188 ++++
  dlls/d3d9-nine/Makefile.in        |   15 +
  dlls/d3d9-nine/d3d9-nine.spec     |   14 +
  dlls/d3d9-nine/d3d9_main.c        |  173 ++++
- dlls/d3d9-nine/d3dadapter9.c      |  851 +++++++++++++++++++
+ dlls/d3d9-nine/d3dadapter9.c      |  853 ++++++++++++++++++
  dlls/d3d9-nine/d3dadapter9.h      |   32 +
- dlls/d3d9-nine/device_wrap.c      |  503 ++++++++++++
+ dlls/d3d9-nine/device_wrap.c      |  500 +++++++++++
  dlls/d3d9-nine/device_wrap.h      |   26 +
- dlls/d3d9-nine/dri3.c             | 1426 ++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/dri3.c             | 1426 ++++++++++++++++++++++++++++++
  dlls/d3d9-nine/dri3.h             |   91 ++
- dlls/d3d9-nine/present.c          | 1639 +++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/present.c          | 1718 +++++++++++++++++++++++++++++++++++++
  dlls/d3d9-nine/present.h          |   40 +
  dlls/d3d9-nine/shader_validator.c |   88 ++
  dlls/d3d9-nine/shader_validator.h |   29 +
  dlls/d3d9-nine/version.rc         |   26 +
- dlls/d3d9-nine/wndproc.c          |  277 +++++++
+ dlls/d3d9-nine/wndproc.c          |  277 ++++++
  dlls/d3d9-nine/wndproc.h          |   41 +
- dlls/winex11.drv/init.c           |    1 +
- dlls/winex11.drv/x11drv.h         |    1 +
- 19 files changed, 5461 insertions(+)
+ 17 files changed, 5537 insertions(+)
  create mode 100644 dlls/d3d9-nine/Makefile.in
  create mode 100644 dlls/d3d9-nine/d3d9-nine.spec
  create mode 100644 dlls/d3d9-nine/d3d9_main.c
@@ -484,10 +482,10 @@ index 0000000000..d1efdf4a71
 +}
 diff --git a/dlls/d3d9-nine/d3dadapter9.c b/dlls/d3d9-nine/d3dadapter9.c
 new file mode 100644
-index 0000000000..16211cb1dc
+index 0000000000..daa9524361
 --- /dev/null
 +++ b/dlls/d3d9-nine/d3dadapter9.c
-@@ -0,0 +1,851 @@
+@@ -0,0 +1,853 @@
 +/*
 + * Wine IDirect3D9 interface using ID3DAdapter9
 + *
@@ -522,14 +520,14 @@ index 0000000000..16211cb1dc
 +#include "present.h"
 +#include "device_wrap.h"
 +
-+/* This represents a snapshot taken at the moment of creation */
++/* this represents a snapshot taken at the moment of creation */
 +struct output
 +{
-+    D3DDISPLAYROTATION rotation; /* Current rotation */
++    D3DDISPLAYROTATION rotation; /* current rotation */
 +    D3DDISPLAYMODEEX *modes;
 +    unsigned nmodes;
 +    unsigned nmodesalloc;
-+    unsigned current; /* Current mode num */
++    unsigned current; /* current mode num */
 +
 +    HMONITOR monitor;
 +};
@@ -540,10 +538,11 @@ index 0000000000..16211cb1dc
 +    unsigned noutputs;
 +    unsigned noutputsalloc;
 +
-+    /* Override driver provided DeviceName with this to homogenize device names
++    /* override driver provided DeviceName with this to homogenize device names
 +     * with wine */
 +    WCHAR devname[32];
 +
++    /* driver stuff */
 +    ID3DAdapter9 *adapter;
 +};
 +
@@ -560,18 +559,19 @@ index 0000000000..16211cb1dc
 +    /* IUnknown reference count */
 +    LONG refs;
 +
-+    /* Adapter groups and mappings */
++    /* adapter groups and mappings */
 +    struct adapter_group *groups;
 +    struct adapter_map *map;
 +    unsigned nadapters;
 +    unsigned ngroups;
 +    unsigned ngroupsalloc;
 +
-+    boolean ex; /* True if it implements IDirect3D9Ex */
++    /* true if it implements IDirect3D9Ex */
++    boolean ex;
 +    Display *gdi_display;
 +};
 +
-+/* Convenience wrapper for calls into ID3D9Adapter */
++/* convenience wrapper for calls into ID3D9Adapter */
 +#define ADAPTER_GROUP \
 +    This->groups[This->map[Adapter].group]
 +
@@ -598,7 +598,7 @@ index 0000000000..16211cb1dc
 +    TRACE("%p decreasing refcount to %u.\n", This, refs);
 +    if (refs == 0)
 +    {
-+        /* Dtor */
++        /* dtor */
 +        if (This->map)
 +        {
 +            HeapFree(GetProcessHeap(), 0, This->map);
@@ -1301,7 +1301,7 @@ index 0000000000..16211cb1dc
 +        return hr;
 +    }
 +
-+    /* Map absolute adapter IDs with internal adapters */
++    /* map absolute adapter IDs with internal adapters */
 +    for (i = 0; i < This->ngroups; ++i)
 +    {
 +        for (j = 0; j < This->groups[i].noutputs; ++j)
@@ -1379,10 +1379,10 @@ index 0000000000..ad54f67285
 +#endif /* __WINE_D3D9ADAPTER_H */
 diff --git a/dlls/d3d9-nine/device_wrap.c b/dlls/d3d9-nine/device_wrap.c
 new file mode 100644
-index 0000000000..9e577ea77e
+index 0000000000..e662c6f89a
 --- /dev/null
 +++ b/dlls/d3d9-nine/device_wrap.c
-@@ -0,0 +1,503 @@
+@@ -0,0 +1,500 @@
 +/*
 + * Copyright 2016 Axel Davy
 + *
@@ -1408,9 +1408,6 @@ index 0000000000..9e577ea77e
 +#include <d3d9.h>
 +
 +#include "device_wrap.h"
-+
-+/* Wrap hotpatchable functions to allow Steam Overlay
-+ * to work with nine. */
 +
 +struct IDirect3DDevice9Ex_Minor1
 +{
@@ -1920,7 +1917,7 @@ index 0000000000..8f5e7206a0
 +#endif /* __NINE_DEVICE_WRAP_H */
 diff --git a/dlls/d3d9-nine/dri3.c b/dlls/d3d9-nine/dri3.c
 new file mode 100644
-index 0000000000..a566849f7e
+index 0000000000..3946e7f8bf
 --- /dev/null
 +++ b/dlls/d3d9-nine/dri3.c
 @@ -0,0 +1,1426 @@
@@ -1989,12 +1986,12 @@ index 0000000000..a566849f7e
 +#define EGL_EGLEXT_PROTOTYPES 1
 +#define GL_GLEXT_LEGACY 1
 +
-+/* Workaround for broken ABI on x86_64 due to windef.h */
++/* workaround for broken ABI on x86_64 due to windef.h */
 +#undef APIENTRY
 +#undef APIENTRYP
 +#include <GL/gl.h>
 +
-+/* Workaround gl header bug */
++/* workaround gl header bug */
 +#define glBlendColor glBlendColorLEV
 +#define glBlendEquation glBlendEquationLEV
 +#include <GL/glext.h>
@@ -2018,7 +2015,7 @@ index 0000000000..a566849f7e
 +
 +struct PRESENTPriv {
 +    xcb_connection_t *xcb_connection;
-+    xcb_connection_t *xcb_connection_bis; /* To avoid libxcb thread bugs, use a different connection to present pixmaps */
++    xcb_connection_t *xcb_connection_bis; /* to avoid libxcb thread bugs, use a different connection to present pixmaps */
 +    XID window;
 +    uint64_t last_msc;
 +    uint64_t last_target;
@@ -2028,7 +2025,7 @@ index 0000000000..a566849f7e
 +    int pixmap_present_pending;
 +    BOOL idle_notify_since_last_check;
 +    BOOL notify_with_serial_pending;
-+    CRITICAL_SECTION mutex_present; /* Protect readind/writing present_priv things */
++    CRITICAL_SECTION mutex_present; /* protect readind/writing present_priv things */
 +    CRITICAL_SECTION mutex_xcb_wait;
 +    BOOL xcb_wait;
 +};
@@ -2132,7 +2129,7 @@ index 0000000000..a566849f7e
 +        display = eglGetPlatformDisplayEXT_func(EGL_PLATFORM_X11_EXT, dpy, NULL);
 +    if (!display)
 +        return FALSE;
-+    /* Count references on display for multi device setups */
++    /* count references on display for multi device setups */
 +    display_ref++;
 +
 +    if (eglInitialize(display, &major, &minor) != EGL_TRUE)
@@ -2200,7 +2197,7 @@ index 0000000000..a566849f7e
 +    return FALSE;
 +}
 +
-+/* Hypothesis: at this step all textures, etc are destroyed */
++/* hypothesis: at this step all textures, etc are destroyed */
 +void DRI2FallbackDestroy(struct DRI2priv *priv)
 +{
 +    EGLenum current_api;
@@ -2210,7 +2207,7 @@ index 0000000000..a566849f7e
 +    eglDestroyContext(priv->display, priv->context);
 +    if (display)
 +    {
-+        /* Destroy display connection with last device */
++        /* destroy display connection with last device */
 +        display_ref--;
 +        if (!display_ref)
 +        {
@@ -2380,7 +2377,7 @@ index 0000000000..a566849f7e
 +        return False;
 +    }
 +
-+    /* Check string lengths */
++    /* check string lengths */
 +    dev_len = rep.deviceNameLength;
 +    driv_len = rep.driverNameLength;
 +    if (dev_len == 0 || driv_len == 0)
@@ -2391,7 +2388,7 @@ index 0000000000..a566849f7e
 +        return False;
 +    }
 +
-+    /* Read out driver */
++    /* read out driver */
 +    driver = HeapAlloc(GetProcessHeap(), 0, driv_len + 1);
 +    if (!driver)
 +    {
@@ -2403,7 +2400,7 @@ index 0000000000..a566849f7e
 +    _XReadPad(dpy, driver, driv_len);
 +    HeapFree(GetProcessHeap(), 0, driver); /* we don't need the driver */
 +
-+    /* Read out device */
++    /* read out device */
 +    *device = HeapAlloc(GetProcessHeap(), 0, dev_len + 1);
 +    if (!*device)
 +    {
@@ -2494,7 +2491,7 @@ index 0000000000..a566849f7e
 +            (*pixmap = xcb_generate_id(xcb_connection)), root, 0,
 +            width, height, stride, depth, bpp, fd);
 +
-+    error = xcb_request_check(xcb_connection, cookie); /* Performs a flush */
++    error = xcb_request_check(xcb_connection, cookie); /* performs a flush */
 +    if (error)
 +    {
 +        ERR("Error using DRI3 to convert a DmaBufFd to pixmap\n");
@@ -2595,7 +2592,7 @@ index 0000000000..a566849f7e
 +{
 +    xcb_generic_event_t *ev;
 +
-+    if ((present_priv->xcb_wait && !assert_no_other_thread_waiting) || /* Don't steal events to someone waiting */
++    if ((present_priv->xcb_wait && !assert_no_other_thread_waiting) || /* don't steal events to someone waiting */
 +            !present_priv->special_event)
 +        return;
 +
@@ -2680,7 +2677,7 @@ index 0000000000..a566849f7e
 +        xcb_flush(present_priv->xcb_connection);
 +        EnterCriticalSection(&present_priv->mutex_xcb_wait);
 +        LeaveCriticalSection(&present_priv->mutex_xcb_wait);
-+        /* The problem here is that we don't have access to the event the other thread got.
++        /* the problem here is that we don't have access to the event the other thread got.
 +         * It is either presented event, idle event or notify event.
 +         */
 +        while (present_priv->pixmap_present_pending >= 2)
@@ -2702,9 +2699,9 @@ index 0000000000..a566849f7e
 +    }
 +    else
 +    {
-+        while (present_priv->pixmap_present_pending) /* Wait all sent pixmaps are presented */
++        while (present_priv->pixmap_present_pending) /* wait all sent pixmaps are presented */
 +            PRESENTwait_events(present_priv, FALSE);
-+        PRESENTflush_events(present_priv, TRUE); /* May be remaining idle event */
++        PRESENTflush_events(present_priv, TRUE); /* may be remaining idle event */
 +        /* Since idle events are send with the complete events when it is not flips,
 +         * we are not expecting any new event here */
 +    }
@@ -2731,13 +2728,13 @@ index 0000000000..a566849f7e
 +                update = xcb_generate_id(present_priv->xcb_connection);
 +                xcb_xfixes_create_region(present_priv->xcb_connection, valid, 1, &rect_update);
 +                xcb_xfixes_create_region(present_priv->xcb_connection, update, 1, &rect_update);
-+                /* Here we know the pixmap has been presented. Thus if it is on screen,
++                /* here we know the pixmap has been presented. Thus if it is on screen,
 +                 * the following request can only make it released by the server if it is not */
 +                xcb_present_pixmap(present_priv->xcb_connection, present_priv->window,
 +                        current->pixmap, 0, valid, update, 0, 0, None, None,
 +                        None, XCB_PRESENT_OPTION_COPY | XCB_PRESENT_OPTION_ASYNC, 0, 0, 0, 0, NULL);
 +                xcb_flush(present_priv->xcb_connection);
-+                PRESENTwait_events(present_priv, FALSE); /* By assumption this can only be idle event */
++                PRESENTwait_events(present_priv, FALSE); /* by assumption this can only be idle event */
 +                PRESENTflush_events(present_priv, TRUE); /* Shoudln't be needed */
 +            }
 +        }
@@ -2777,7 +2774,7 @@ index 0000000000..a566849f7e
 +        present_priv->special_event = xcb_register_for_special_xge(present_priv->xcb_connection,
 +                &xcb_present_id, eid, NULL);
 +
-+        error = xcb_request_check(present_priv->xcb_connection, cookie); /* Performs a flush */
++        error = xcb_request_check(present_priv->xcb_connection, cookie); /* performs a flush */
 +        if (error || !present_priv->special_event)
 +        {
 +            ERR("FAILED to use the X PRESENT extension. Was the destination a window ?\n");
@@ -3221,7 +3218,7 @@ index 0000000000..a566849f7e
 +            window, present_pixmap_priv->pixmap, present_pixmap_priv->serial,
 +            valid, update, x_off, y_off, None, None, None, options,
 +            target_msc, 0, 0, 0, NULL);
-+    error = xcb_request_check(present_priv->xcb_connection_bis, cookie); /* Performs a flush */
++    error = xcb_request_check(present_priv->xcb_connection_bis, cookie); /* performs a flush */
 +
 +    if (update)
 +        xcb_xfixes_destroy_region(present_priv->xcb_connection_bis, update);
@@ -3285,9 +3282,9 @@ index 0000000000..a566849f7e
 +         * However it would make it work in that case */
 +        if (present_priv->xcb_wait)
 +        {
-+            /* We allow only one thread to dispatch events */
++            /* we allow only one thread to dispatch events */
 +            EnterCriticalSection(&present_priv->mutex_xcb_wait);
-+            /* Here the other thread got an event but hasn't treated it yet */
++            /* here the other thread got an event but hasn't treated it yet */
 +            LeaveCriticalSection(&present_priv->mutex_xcb_wait);
 +            LeaveCriticalSection(&present_priv->mutex_present);
 +            Sleep(10); /* Let it treat the event */
@@ -3352,7 +3349,7 @@ index 0000000000..a566849f7e
 +}
 diff --git a/dlls/d3d9-nine/dri3.h b/dlls/d3d9-nine/dri3.h
 new file mode 100644
-index 0000000000..86654c06f0
+index 0000000000..3c9309dedb
 --- /dev/null
 +++ b/dlls/d3d9-nine/dri3.h
 @@ -0,0 +1,91 @@
@@ -3417,7 +3414,7 @@ index 0000000000..86654c06f0
 +
 +BOOL PRESENTInit(Display *dpy, PRESENTpriv **present_priv);
 +
-+/* Will clean properly and free all PRESENTPixmapPriv associated to PRESENTpriv.
++/* will clean properly and free all PRESENTPixmapPriv associated to PRESENTpriv.
 + * PRESENTPixmapPriv should not be freed by something else.
 + * If never a PRESENTPixmapPriv has to be destroyed,
 + * please destroy the current PRESENTpriv and create a new one.
@@ -3449,10 +3446,10 @@ index 0000000000..86654c06f0
 +#endif /* __WINE_DRI3_H */
 diff --git a/dlls/d3d9-nine/present.c b/dlls/d3d9-nine/present.c
 new file mode 100644
-index 0000000000..0e35287aa8
+index 0000000000..7253a3a5b9
 --- /dev/null
 +++ b/dlls/d3d9-nine/present.c
-@@ -0,0 +1,1639 @@
+@@ -0,0 +1,1718 @@
 +/*
 + * Wine ID3DAdapter9 support functions
 + *
@@ -3490,8 +3487,8 @@ index 0000000000..0e35287aa8
 +#include "dri3.h"
 +#include "wndproc.h"
 +
-+#include "wine/library.h" /* for wine_dl* */
-+#include "wine/unicode.h" /* for strcpyW */
++#include "wine/library.h" // for wine_dl*
++#include "wine/unicode.h" // for strcpyW
 +
 +#ifndef D3DPRESENT_DONOTWAIT
 +#define D3DPRESENT_DONOTWAIT      0x00000001
@@ -3508,30 +3505,30 @@ index 0000000000..0e35287aa8
 +#define WINE_D3DADAPTER_DRIVER_PRESENT_VERSION_MINOR 0
 +#endif
 +
-+
 +static const struct D3DAdapter9DRM *d3d9_drm = NULL;
 +#ifdef D3D9NINE_DRI2
 +static int is_dri2_fallback = 0;
 +#endif
 +
++/* Start section of x11drv.h */
 +#define X11DRV_ESCAPE 6789
 +enum x11drv_escape_codes
 +{
-+    X11DRV_SET_DRAWABLE,     /* Set current drawable for a DC */
-+    X11DRV_GET_DRAWABLE,     /* Get current drawable for a DC */
-+    X11DRV_START_EXPOSURES,  /* Start graphics exposures */
-+    X11DRV_END_EXPOSURES,    /* End graphics exposures */
-+    X11DRV_FLUSH_GL_DRAWABLE /* Flush changes made to the gl drawable */
++    X11DRV_SET_DRAWABLE,     /* set current drawable for a DC */
++    X11DRV_GET_DRAWABLE,     /* get current drawable for a DC */
++    X11DRV_START_EXPOSURES,  /* start graphics exposures */
++    X11DRV_END_EXPOSURES,    /* end graphics exposures */
++    X11DRV_FLUSH_GL_DRAWABLE /* flush changes made to the gl drawable */
 +};
 +
 +struct x11drv_escape_get_drawable
 +{
-+    enum x11drv_escape_codes code;         /* Escape code (X11DRV_GET_DRAWABLE) */
++    enum x11drv_escape_codes code;         /* escape code (X11DRV_GET_DRAWABLE) */
 +    Drawable                 drawable;     /* X drawable */
 +    Drawable                 gl_drawable;  /* GL drawable */
 +    int                      pixel_format; /* internal GL pixel format */
-+    RECT                     dc_rect;      /* DC rectangle relative to drawable */
 +};
++/* End section x11drv.h */
 +
 +static XContext d3d_hwnd_context;
 +static CRITICAL_SECTION context_section;
@@ -3549,7 +3546,6 @@ index 0000000000..0e35287aa8
 +struct d3d_drawable
 +{
 +    Drawable drawable; /* X11 drawable */
-+    RECT dc_rect; /* Rect relative to the X11 drawable */
 +    HDC hdc;
 +    HWND wnd; /* HWND (for convenience) */
 +};
@@ -3617,6 +3613,27 @@ index 0000000000..0e35287aa8
 +    LeaveCriticalSection(&context_section);
 +}
 +
++static RECT DRI3Present_GetClientRecWindowRelative(HWND hwnd)
++{
++    RECT rect;
++    RECT wnd;
++
++    /* Get client space dimensions */
++    GetClientRect(hwnd, &rect);
++
++    /* Get window in screen space */
++    GetWindowRect(hwnd, &wnd);
++
++    /* Transform to offset */
++    MapWindowPoints(HWND_DESKTOP, hwnd, (LPPOINT) &wnd, 2);
++    wnd.top *= -1;
++    wnd.left *= -1;
++    wnd.bottom = wnd.top + rect.bottom;
++    wnd.right = wnd.left + rect.right;
++
++    return wnd;
++}
++
 +static struct d3d_drawable *create_d3dadapter_drawable(HWND hwnd)
 +{
 +    struct x11drv_escape_get_drawable extesc = { X11DRV_GET_DRAWABLE };
@@ -3641,7 +3658,6 @@ index 0000000000..0e35287aa8
 +
 +    d3d->drawable = extesc.drawable;
 +    d3d->wnd = hwnd;
-+    d3d->dc_rect = extesc.dc_rect;
 +
 +    return d3d;
 +}
@@ -3653,19 +3669,6 @@ index 0000000000..0e35287aa8
 +    EnterCriticalSection(&context_section);
 +    if (!XFindContext(gdi_display, (XID)hwnd, d3d_hwnd_context, (char **)&d3d))
 +    {
-+        struct x11drv_escape_get_drawable extesc = { X11DRV_GET_DRAWABLE };
-+
-+        /* Check if the window has moved since last we used it */
-+        if (ExtEscape(d3d->hdc, X11DRV_ESCAPE, sizeof(extesc), (LPCSTR)&extesc,
-+                sizeof(extesc), (LPSTR)&extesc) <= 0)
-+        {
-+            WARN("Window update check failed (hwnd=%p, hdc=%p)\n",
-+                 hwnd, d3d->hdc);
-+        }
-+
-+        if (!EqualRect(&d3d->dc_rect, &extesc.dc_rect))
-+            d3d->dc_rect = extesc.dc_rect;
-+
 +        return d3d;
 +    }
 +    LeaveCriticalSection(&context_section);
@@ -3680,7 +3683,7 @@ index 0000000000..0e35287aa8
 +    if (!XFindContext(gdi_display, (XID)hwnd,
 +            d3d_hwnd_context, (char **)&race))
 +    {
-+        /* Apparently someone beat us to creating this d3d drawable. Let's not
++        /* apparently someone beat us to creating this d3d drawable. Let's not
 +           waste more time with X11 calls and just use theirs instead. */
 +        free_d3dadapter_drawable(d3d);
 +        return race;
@@ -3709,7 +3712,7 @@ index 0000000000..0e35287aa8
 +    TRACE("%p decreasing refcount to %u.\n", This, refs);
 +    if (refs == 0)
 +    {
-+        /* Dtor */
++        /* dtor */
 +        (void) nine_unregister_window(This->focus_wnd);
 +        if (This->d3d)
 +            destroy_d3dadapter_drawable(This->gdi_display, This->d3d->wnd);
@@ -3799,7 +3802,7 @@ index 0000000000..0e35287aa8
 +static HRESULT WINAPI DRI3Present_DestroyD3DWindowBuffer(struct DRI3Present *This,
 +        struct D3DWindowBuffer *buffer)
 +{
-+    /* The pixmap is managed by the PRESENT backend.
++    /* the pixmap is managed by the PRESENT backend.
 +     * But if it can delete it right away, we may have
 +     * better performance */
 +    PRESENTTryFreePixmap(This->gdi_display, buffer->present_pixmap_priv);
@@ -3825,11 +3828,74 @@ index 0000000000..0e35287aa8
 +    if (is_dri2_fallback)
 +        return D3DERR_DRIVERINTERNALERROR;
 +#endif
-+    /* TODO: use dc_rect */
 +    if (PRESENTHelperCopyFront(This->gdi_display, buffer->present_pixmap_priv))
 +        return D3D_OK;
 +    else
 +        return D3DERR_DRIVERINTERNALERROR;
++}
++
++/* Try to detect client side window decorations by walking the X Drawable up.
++ * In case there's an intermediate Drawable, server side window decorations are used.
++ * TODO: Find a X11 function to query for window decorations.
++ */
++static BOOL DRI3Present_HasClientSideWindowDecorations(struct DRI3Present *This,
++        HWND hwnd)
++{
++    struct x11drv_escape_get_drawable extesc = { X11DRV_GET_DRAWABLE };
++    Window Wroot;
++    Window Wparent;
++    Window *Wchildren;
++    unsigned int numchildren;
++    HWND parent;
++    HDC hdc;
++    BOOL ret = TRUE;
++
++    parent = GetParent(hwnd);
++    if (!parent)
++        parent = GetDesktopWindow();
++    if (!parent)
++    {
++        ERR("Unexpected error getting the parent hwnd (hwnd=%p)\n", hwnd);
++        return FALSE;
++    }
++
++    hdc = GetDCEx(hwnd, 0, DCX_CACHE | DCX_CLIPSIBLINGS);
++    if (!hdc)
++        return FALSE;
++    if (ExtEscape(hdc, X11DRV_ESCAPE, sizeof(extesc), (LPCSTR)&extesc,
++            sizeof(extesc), (LPSTR)&extesc) <= 0)
++    {
++        ERR("Unexpected error in X Drawable lookup (hwnd=%p, hdc=%p)\n", hwnd, hdc);
++        ReleaseDC(hwnd, hdc);
++        return FALSE;
++    }
++    ReleaseDC(hwnd, hdc);
++
++    if (XQueryTree(This->gdi_display, extesc.drawable, &Wroot, &Wparent, &Wchildren, &numchildren))
++    {
++        hdc = GetDCEx(parent, 0, DCX_CACHE | DCX_CLIPSIBLINGS);
++        if (!hdc)
++            return FALSE;
++
++        if (ExtEscape(hdc, X11DRV_ESCAPE, sizeof(extesc), (LPCSTR)&extesc,
++                sizeof(extesc), (LPSTR)&extesc) <= 0)
++        {
++            ERR("Unexpected error in X Drawable lookup (hwnd=%p, hdc=%p)\n", parent, hdc);
++            ReleaseDC(parent, hdc);
++            return FALSE;
++        }
++        ReleaseDC(parent, hdc);
++
++        if (Wparent != extesc.drawable)
++        {
++            /* Found at least one intermediate window */
++            ret = FALSE;
++        }
++        if (Wchildren)
++            free(Wchildren);
++    }
++
++    return ret;
 +}
 +
 +static HRESULT WINAPI DRI3Present_PresentBuffer( struct DRI3Present *This,
@@ -3838,13 +3904,17 @@ index 0000000000..0e35287aa8
 +{
 +    struct d3d_drawable *d3d;
 +    RECT dest_translate;
++    RECT offset;
++    HWND hwnd;
 +
 +    if (hWndOverride)
-+        d3d = get_d3d_drawable(This->gdi_display, hWndOverride);
++        hwnd = hWndOverride;
 +    else if (This->params.hDeviceWindow)
-+        d3d = get_d3d_drawable(This->gdi_display, This->params.hDeviceWindow);
++        hwnd = This->params.hDeviceWindow;
 +    else
-+        d3d = get_d3d_drawable(This->gdi_display, This->focus_wnd);
++        hwnd = This->focus_wnd;
++
++    d3d = get_d3d_drawable(This->gdi_display, hwnd);
 +
 +    if (!d3d)
 +        return D3DERR_DRIVERINTERNALERROR;
@@ -3855,17 +3925,25 @@ index 0000000000..0e35287aa8
 +
 +    This->d3d = d3d;
 +
-+    if ((d3d->dc_rect.top != 0) && (d3d->dc_rect.left != 0))
++    /* In case of client side window decorations we need to add an offset within
++     * the X drawable.
++     * FIXME: Call once on window style / size change */
++    if (DRI3Present_HasClientSideWindowDecorations(This, hwnd))
 +    {
-+        if (!pDestRect)
-+            pDestRect = (const RECT *) &(d3d->dc_rect);
-+        else
++        offset = DRI3Present_GetClientRecWindowRelative(hwnd);
++
++        if ((offset.top != 0) || (offset.left != 0))
 +        {
-+            dest_translate.top = pDestRect->top + d3d->dc_rect.top;
-+            dest_translate.left = pDestRect->left + d3d->dc_rect.left;
-+            dest_translate.bottom = pDestRect->bottom + d3d->dc_rect.bottom;
-+            dest_translate.right = pDestRect->right + d3d->dc_rect.right;
-+            pDestRect = (const RECT *) &dest_translate;
++            if (!pDestRect)
++                pDestRect = (const RECT *) &offset;
++            else
++            {
++                dest_translate.top = pDestRect->top + offset.top;
++                dest_translate.left = pDestRect->left + offset.left;
++                dest_translate.bottom = pDestRect->bottom + offset.bottom;
++                dest_translate.right = pDestRect->right + offset.right;
++                pDestRect = (const RECT *) &dest_translate;
++            }
 +        }
 +    }
 +
@@ -3943,7 +4021,7 @@ index 0000000000..0e35287aa8
 +    pMode->ScanLineOrdering = (dm.dmDisplayFlags & DM_INTERLACED) ?
 +            D3DSCANLINEORDERING_INTERLACED : D3DSCANLINEORDERING_PROGRESSIVE;
 +
-+    /* TODO: Don't guess values */
++    /* XXX This is called "guessing" */
 +    switch (dm.dmBitsPerPel)
 +    {
 +        case 32: pMode->Format = D3DFMT_X8R8G8B8; break;
@@ -4073,7 +4151,7 @@ index 0000000000..0e35287aa8
 +        return D3DERR_INVALIDCALL;
 +    *width = pRect.right - pRect.left;
 +    *height = pRect.bottom - pRect.top;
-+    *depth = 24; /* TODO */
++    *depth = 24; //TODO
 +    return D3D_OK;
 +}
 +
@@ -4701,8 +4779,6 @@ index 0000000000..0e35287aa8
 +
 +    This->params = *params;
 +
-+    strcpyW(This->devname, devname);
-+
 +    DRI3Present_UpdatePresentationInterval(This);
 +
 +    strcpyW(This->devname, devname);
@@ -4865,14 +4941,14 @@ index 0000000000..0e35287aa8
 +    {
 +        ZeroMemory(&dd, sizeof(dd));
 +        dd.cb = sizeof(dd);
-+        /* Find final device name */
++        /* find final device name */
 +        if (!EnumDisplayDevicesW(device_name, adapter + i, &dd, 0))
 +        {
 +            WARN("Couldn't find subdevice %d from `%s'\n",
 +                    i, debugstr_w(device_name));
 +        }
 +
-+        /* Create an ID3DPresent for it */
++        /* create an ID3DPresent for it */
 +        hr = DRI3Present_new(gdi_display, dd.DeviceName, &params[i],
 +                focus_wnd, &This->present_backends[i], ex, This->no_window_changes);
 +        if (FAILED(hr))
@@ -4944,7 +5020,7 @@ index 0000000000..0e35287aa8
 +    char errbuf[256];
 +    char pathbuf[MAX_PATH];
 +
-+    /* Like in opengl.c (single threaded assumption OK?) */
++    /* like in opengl.c (single threaded assumption OK?) */
 +    if (done)
 +        return handle != NULL;
 +    done = 1;
@@ -5012,7 +5088,7 @@ index 0000000000..0e35287aa8
 +        pathbuf[sizeof(pathbuf)-1] = 0;
 +    }
 +#endif
-+    /* Find our entry point in d3dadapter9 */
++    /* find our entry point in d3dadapter9 */
 +    pD3DAdapter9GetProc = wine_dlsym(handle, "D3DAdapter9GetProc",
 +            errbuf, sizeof(errbuf));
 +    if (!pD3DAdapter9GetProc)
@@ -5021,7 +5097,7 @@ index 0000000000..0e35287aa8
 +        goto cleanup;
 +    }
 +
-+    /* Get a handle to the drm backend struct */
++    /* get a handle to the drm backend struct */
 +    d3d9_drm = pD3DAdapter9GetProc("drm");
 +    if (!d3d9_drm)
 +    {
@@ -5029,7 +5105,7 @@ index 0000000000..0e35287aa8
 +        goto cleanup;
 +    }
 +
-+    /* Verify that we're binary compatible */
++    /* verify that we're binary compatible */
 +    if (d3d9_drm->major_version != 0)
 +    {
 +        ERR("Version mismatch. %s has %d.%d, was expecting 0.x\n",
@@ -5037,7 +5113,7 @@ index 0000000000..0e35287aa8
 +        goto cleanup;
 +    }
 +
-+    /* This will be used to store d3d_drawables */
++    /* this will be used to store d3d_drawables */
 +    d3d_hwnd_context = XUniqueContext();
 +
 +    if (!PRESENTCheckExtension(gdi_display, 1, 0))
@@ -5629,30 +5705,6 @@ index 0000000000..15f26d491a
 +#define NINE_WINDOW_CLASS_NAME "Gallium_Nine_Window"
 +
 +#endif
-diff --git a/dlls/winex11.drv/init.c b/dlls/winex11.drv/init.c
-index 3af1b78490..f9abc9b96c 100644
---- a/dlls/winex11.drv/init.c
-+++ b/dlls/winex11.drv/init.c
-@@ -365,6 +365,7 @@ static INT X11DRV_ExtEscape( PHYSDEV dev, INT escape, INT in_count, LPCVOID in_d
-                 {
-                     struct x11drv_escape_get_drawable *data = out_data;
-                     data->drawable = physDev->drawable;
-+                    data->dc_rect = physDev->dc_rect;
-                     return TRUE;
-                 }
-                 break;
-diff --git a/dlls/winex11.drv/x11drv.h b/dlls/winex11.drv/x11drv.h
-index 9974bd7adf..ebeb93d45b 100644
---- a/dlls/winex11.drv/x11drv.h
-+++ b/dlls/winex11.drv/x11drv.h
-@@ -298,6 +298,7 @@ struct x11drv_escape_get_drawable
-     Drawable                 drawable;     /* X drawable */
-     Drawable                 gl_drawable;  /* GL drawable */
-     int                      pixel_format; /* internal GL pixel format */
-+    RECT                     dc_rect;      /* DC rectangle relative to drawable */
- };
- 
- struct x11drv_escape_flush_gl_drawable
 -- 
-2.11.1
+2.12.0
 
