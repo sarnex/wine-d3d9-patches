@@ -1,6 +1,6 @@
-From 1f295c8a93f8c6d80345476be59ca7f7ed56dc8c Mon Sep 17 00:00:00 2001
+From 5072300d16b403f4a972e2d872ed741a7527f497 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Thu, 23 Mar 2017 22:45:37 -0400
+Date: Mon, 10 Apr 2017 14:32:56 -0400
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -15,14 +15,14 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  dlls/d3d9-nine/device_wrap.h      |   26 +
  dlls/d3d9-nine/dri3.c             | 1426 ++++++++++++++++++++++++++++++
  dlls/d3d9-nine/dri3.h             |   91 ++
- dlls/d3d9-nine/present.c          | 1718 +++++++++++++++++++++++++++++++++++++
+ dlls/d3d9-nine/present.c          | 1748 +++++++++++++++++++++++++++++++++++++
  dlls/d3d9-nine/present.h          |   40 +
  dlls/d3d9-nine/shader_validator.c |   88 ++
  dlls/d3d9-nine/shader_validator.h |   29 +
  dlls/d3d9-nine/version.rc         |   26 +
  dlls/d3d9-nine/wndproc.c          |  277 ++++++
  dlls/d3d9-nine/wndproc.h          |   41 +
- 17 files changed, 5537 insertions(+)
+ 17 files changed, 5567 insertions(+)
  create mode 100644 dlls/d3d9-nine/Makefile.in
  create mode 100644 dlls/d3d9-nine/d3d9-nine.spec
  create mode 100644 dlls/d3d9-nine/d3d9_main.c
@@ -41,10 +41,10 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 4a38c3831c..76bcd59180 100644
+index 7e3f643dd2..cb88e402af 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
+@@ -65,6 +65,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
  AC_ARG_WITH(opencl,    AS_HELP_STRING([--without-opencl],[do not use OpenCL]),
              [if test "x$withval" = "xno"; then ac_cv_header_CL_cl_h=no; ac_cv_header_OpenCL_opencl_h=no; fi])
  AC_ARG_WITH(opengl,    AS_HELP_STRING([--without-opengl],[do not use OpenGL]))
@@ -59,7 +59,7 @@ index 4a38c3831c..76bcd59180 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -386,6 +394,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -374,6 +382,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -68,9 +68,9 @@ index 4a38c3831c..76bcd59180 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1207,6 +1217,183 @@ OpenGL and Direct3D won't be supported.])
-     WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
-                      [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
+@@ -1157,6 +1167,183 @@ This probably prevents linking to OpenGL. Try deleting the file and restarting c
+     WINE_WARNING_WITH(opengl,[test -n "$opengl_msg"],[$opengl_msg
+ OpenGL and Direct3D won't be supported.])
  
 +    dnl Check for d3d9-nine support
 +    if test "x$with_d3d9_nine" = "xauto" && (test "x$with_d3d9_nine_module" = "xauto" || test "x$with_d3d9_nine_headers_path" = "xauto")
@@ -252,7 +252,7 @@ index 4a38c3831c..76bcd59180 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2982,6 +3169,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2906,6 +3093,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -3446,10 +3446,10 @@ index 0000000000..3c9309dedb
 +#endif /* __WINE_DRI3_H */
 diff --git a/dlls/d3d9-nine/present.c b/dlls/d3d9-nine/present.c
 new file mode 100644
-index 0000000000..7253a3a5b9
+index 0000000000..2d9390a358
 --- /dev/null
 +++ b/dlls/d3d9-nine/present.c
-@@ -0,0 +1,1718 @@
+@@ -0,0 +1,1748 @@
 +/*
 + * Wine ID3DAdapter9 support functions
 + *
@@ -5053,15 +5053,46 @@ index 0000000000..7253a3a5b9
 +            ERR("Failed to read Direct3DNine registry\n");
 +            goto cleanup;
 +        }
-+        handle = wine_dlopen(path,
-+                RTLD_GLOBAL | RTLD_NOW, errbuf, sizeof(errbuf));
-+        if (!handle)
++        /* Split colon separated path for multi-arch support */
++        if (strstr(path, ":"))
 +        {
-+            ERR("Failed to load %s: %s\n", path, errbuf);
-+            goto cleanup;
++            char *tmp_path = strstr(path, ":");
++
++            /* Replace colon by string terminate */
++            *tmp_path = 0;
++            tmp_path ++;
++            handle = wine_dlopen(path,
++                    RTLD_GLOBAL | RTLD_NOW, errbuf, sizeof(errbuf));
++            if (!handle)
++            {
++                TRACE("Failed to load '%s': %s\n", path, errbuf);
++
++                handle = wine_dlopen(tmp_path,
++                        RTLD_GLOBAL | RTLD_NOW, errbuf, sizeof(errbuf));
++                if (!handle)
++                {
++                    TRACE("Failed to load '%s': %s\n", tmp_path, errbuf);
++                    ERR("Failed to load '%s' and '%s' set by ModulePath.\n",
++                            path, tmp_path);
++                    goto cleanup;
++                }
++            }
++        }
++        else
++        {
++            handle = wine_dlopen(path,
++                    RTLD_GLOBAL | RTLD_NOW, errbuf, sizeof(errbuf));
++            if (!handle)
++            {
++                TRACE("Failed to load %s: %s\n", path, errbuf);
++                ERR("Failed to load '%s' set by ModulePath.\n", path);
++                goto cleanup;
++            }
 +        }
 +        memcpy(pathbuf, path, size >= sizeof(pathbuf) ? (sizeof(pathbuf)-1) : size);
 +        pathbuf[sizeof(pathbuf)-1] = 0;
++
++        HeapFree(GetProcessHeap(), 0, path);
 +    }
 +
 +use_default_path:
@@ -5079,7 +5110,7 @@ index 0000000000..7253a3a5b9
 +                RTLD_GLOBAL | RTLD_NOW, errbuf, sizeof(errbuf));
 +        if (!handle)
 +        {
-+            ERR("Failed to load %s: %s\n", D3D9NINE_MODULEPATH, errbuf);
++            ERR("Failed to load '%s': %s\n", D3D9NINE_MODULEPATH, errbuf);
 +            goto cleanup;
 +        }
 +        memcpy(pathbuf, D3D9NINE_MODULEPATH,
@@ -5137,7 +5168,6 @@ index 0000000000..7253a3a5b9
 +        }
 +#endif
 +    }
-+    HeapFree(GetProcessHeap(), 0, path);
 +
 +    return TRUE;
 +
@@ -5706,5 +5736,5 @@ index 0000000000..15f26d491a
 +
 +#endif
 -- 
-2.12.1
+2.12.2
 
