@@ -1,6 +1,6 @@
-From 5072300d16b403f4a972e2d872ed741a7527f497 Mon Sep 17 00:00:00 2001
+From e22c3b7c8bec9ee759d39aa652213b0abcba26a1 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Mon, 10 Apr 2017 14:32:56 -0400
+Date: Wed, 19 Apr 2017 23:34:51 -0400
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -41,10 +41,10 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 7e3f643dd2..cb88e402af 100644
+index 0a8d88390f..4b86d74c0e 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -65,6 +65,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
+@@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
  AC_ARG_WITH(opencl,    AS_HELP_STRING([--without-opencl],[do not use OpenCL]),
              [if test "x$withval" = "xno"; then ac_cv_header_CL_cl_h=no; ac_cv_header_OpenCL_opencl_h=no; fi])
  AC_ARG_WITH(opengl,    AS_HELP_STRING([--without-opengl],[do not use OpenGL]))
@@ -59,7 +59,7 @@ index 7e3f643dd2..cb88e402af 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -374,6 +382,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -386,6 +394,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -68,9 +68,9 @@ index 7e3f643dd2..cb88e402af 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1157,6 +1167,183 @@ This probably prevents linking to OpenGL. Try deleting the file and restarting c
-     WINE_WARNING_WITH(opengl,[test -n "$opengl_msg"],[$opengl_msg
- OpenGL and Direct3D won't be supported.])
+@@ -1207,6 +1217,183 @@ OpenGL and Direct3D won't be supported.])
+     WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
+                      [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
  
 +    dnl Check for d3d9-nine support
 +    if test "x$with_d3d9_nine" = "xauto" && (test "x$with_d3d9_nine_module" = "xauto" || test "x$with_d3d9_nine_headers_path" = "xauto")
@@ -252,7 +252,7 @@ index 7e3f643dd2..cb88e402af 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2906,6 +3093,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -2987,6 +3174,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
