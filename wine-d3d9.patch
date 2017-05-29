@@ -1,6 +1,6 @@
-From dc3f5fc73980bcea67a374676ca74bc73ed0f70c Mon Sep 17 00:00:00 2001
+From 61860dfa0c46176de3d109c05578725c96cccf02 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sun, 28 May 2017 02:45:45 -0400
+Date: Mon, 29 May 2017 10:33:53 -0400
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -41,7 +41,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 4bc671b66b..afe3208c77 100644
+index 01c425b221..3f454fea5f 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -59,7 +59,7 @@ index 4bc671b66b..afe3208c77 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -386,6 +394,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -388,6 +396,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -68,7 +68,7 @@ index 4bc671b66b..afe3208c77 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1206,6 +1216,183 @@ OpenGL and Direct3D won't be supported.])
+@@ -1219,6 +1229,183 @@ OpenGL and Direct3D won't be supported.])
      WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
                       [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
  
@@ -252,7 +252,7 @@ index 4bc671b66b..afe3208c77 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -2998,6 +3185,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -3020,6 +3207,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
