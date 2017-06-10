@@ -1,6 +1,6 @@
 Use cases:
 a. Vanilla Wine
-  Apply d3d9-helper.patch and then wine-d3d9.patch
+  Apply d3d9-helper.patch and then wine-d3d9.patch and then **autoreconf**
 
 b. Wine Staging
-  Apply all of staging onto vanilla wine, then staging-helper.patch and then wine-d3d9.patch
+  Apply all of staging onto vanilla wine, then staging-helper.patch and then wine-d3d9.patch and then **autoreconf**
