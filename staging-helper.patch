@@ -1,6 +1,6 @@
-From 1634d3ac068eafd3c40546178e164169656a8070 Mon Sep 17 00:00:00 2001
+From deea432ebbd5247bab0f8a7e798ca1aa92c1521a Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 14 Jun 2017 14:47:34 -0400
+Date: Wed, 28 Jun 2017 23:02:39 -0400
 Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -119,5 +119,5 @@ index c375217d71..31cc9bae0d 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.13.1
+2.13.2
 
