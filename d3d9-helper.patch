@@ -1,6 +1,6 @@
-From 8ab998e692b271271e7962795af70c6de9c17182 Mon Sep 17 00:00:00 2001
+From cde3d420aca34fa23a44ecdc6029132e7aff0c06 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 28 Jun 2017 23:03:30 -0400
+Date: Tue, 11 Jul 2017 21:45:01 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -18,7 +18,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 programs/winecfg/staging.c
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
-index 518a99f590..d0f274e99c 100644
+index dd1f74c0fc..2616cd3a66 100644
 --- a/dlls/ntdll/loader.c
 +++ b/dlls/ntdll/loader.c
 @@ -93,6 +93,7 @@ struct builtin_load_info
