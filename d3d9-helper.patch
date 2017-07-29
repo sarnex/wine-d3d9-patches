@@ -1,6 +1,6 @@
-From cde3d420aca34fa23a44ecdc6029132e7aff0c06 Mon Sep 17 00:00:00 2001
+From ee9b2c5e3eb1cd288b964f3f041e08b8191dad3b Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Tue, 11 Jul 2017 21:45:01 -0400
+Date: Sat, 29 Jul 2017 12:12:31 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -622,7 +622,7 @@ index 401d256f1c..ec13e7542c 100644
 +    return ret;
 +}
 diff --git a/dlls/ntdll/ntdll_misc.h b/dlls/ntdll/ntdll_misc.h
-index 5e4c39e8bd..921f58e187 100644
+index ba296d25c3..9b1dd45fff 100644
 --- a/dlls/ntdll/ntdll_misc.h
 +++ b/dlls/ntdll/ntdll_misc.h
 @@ -203,6 +203,7 @@ enum loadorder
@@ -842,5 +842,5 @@ index 72c3e1ba01..b9c0afc005 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.13.2
+2.13.3
 
