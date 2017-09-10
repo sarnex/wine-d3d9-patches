@@ -1,7 +1,7 @@
-From 4a813624e800ad8fef89e0b55a100bfea8d2529d Mon Sep 17 00:00:00 2001
+From b2eae5256ef16dac8fa8cad89f27b4ef0e3bc8b8 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 23 Aug 2017 20:12:37 -0400
-Subject: [PATCH] Staging Helper
+Date: Sun, 10 Sep 2017 11:49:30 -0400
+Subject: [PATCH 1/2] Staging Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
@@ -107,7 +107,7 @@ index a96bdcaab4..7eec5e9608 100644
          break;
      }
 diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
-index c375217d71..31cc9bae0d 100644
+index 314e9858ea..596dc27447 100644
 --- a/programs/winecfg/winecfg.rc
 +++ b/programs/winecfg/winecfg.rc
 @@ -320,6 +320,7 @@ BEGIN

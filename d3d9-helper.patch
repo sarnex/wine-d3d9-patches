@@ -1,6 +1,6 @@
-From 3a33ce6a3266e34cd12051362e934b0fe9667d4b Mon Sep 17 00:00:00 2001
+From bcaab9889971af21dc60e6611faa5d83efb3fb16 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 23 Aug 2017 20:13:41 -0400
+Date: Sun, 10 Sep 2017 11:50:31 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -814,7 +814,7 @@ index 110856a536..a94947439c 100644
  
  /* Drive management  */
 diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
-index 72c3e1ba01..b9c0afc005 100644
+index 5908b491d4..a2da7e6b3a 100644
 --- a/programs/winecfg/winecfg.rc
 +++ b/programs/winecfg/winecfg.rc
 @@ -39,6 +39,7 @@ BEGIN

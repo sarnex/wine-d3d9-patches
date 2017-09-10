@@ -1,7 +1,7 @@
-From b3ae6362eae622e747cf8ad1ee076898e3536597 Mon Sep 17 00:00:00 2001
+From a42e179e73ff4d541188465d0f4ba11b331502d2 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 23 Aug 2017 20:13:00 -0400
-Subject: [PATCH] Wine D3D9
+Date: Sun, 10 Sep 2017 11:49:46 -0400
+Subject: [PATCH 2/2] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
@@ -41,7 +41,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index fd05212057..6b96bdd209 100644
+index c00a5f3767..f3fb3e333b 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -252,7 +252,7 @@ index fd05212057..6b96bdd209 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -3096,6 +3283,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -3097,6 +3284,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
