@@ -1,6 +1,6 @@
-From 2ad04c8f294767771ff1a192274d058d4debbaec Mon Sep 17 00:00:00 2001
+From dfcc5c016fcaef7c7a2ddbff1decf273cc455d15 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 4 Oct 2017 21:45:11 -0400
+Date: Sat, 21 Oct 2017 12:57:57 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -231,7 +231,7 @@ index 9c89d57154..5c493b98a4 100644
          MESSAGE( "wine: could not load kernel32.dll, status %x\n", status );
          exit(1);
 diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
-index 401d256f1c..ec13e7542c 100644
+index 157d2cb2d7..9b2eab2cb9 100644
 --- a/dlls/ntdll/loadorder.c
 +++ b/dlls/ntdll/loadorder.c
 @@ -290,102 +290,165 @@ static inline enum loadorder get_env_load_order( const WCHAR *module )

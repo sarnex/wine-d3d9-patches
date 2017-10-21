@@ -1,6 +1,6 @@
-From db1304facd0007778e9ff5d55461e2c0de408e87 Mon Sep 17 00:00:00 2001
+From daaad5d507d78784d513886ff7c0a8a1911ffa28 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Wed, 4 Oct 2017 21:44:08 -0400
+Date: Sat, 21 Oct 2017 12:57:07 -0400
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -9,7 +9,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  dlls/d3d9-nine/Makefile.in        |   15 +
  dlls/d3d9-nine/d3d9-nine.spec     |   14 +
  dlls/d3d9-nine/d3d9_main.c        |  173 ++++
- dlls/d3d9-nine/d3dadapter9.c      |  853 ++++++++++++++++++
+ dlls/d3d9-nine/d3dadapter9.c      |  898 +++++++++++++++++++
  dlls/d3d9-nine/d3dadapter9.h      |   32 +
  dlls/d3d9-nine/device_wrap.c      |  500 +++++++++++
  dlls/d3d9-nine/device_wrap.h      |   26 +
@@ -22,7 +22,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  dlls/d3d9-nine/version.rc         |   26 +
  dlls/d3d9-nine/wndproc.c          |  277 ++++++
  dlls/d3d9-nine/wndproc.h          |   41 +
- 17 files changed, 5567 insertions(+)
+ 17 files changed, 5612 insertions(+)
  create mode 100644 dlls/d3d9-nine/Makefile.in
  create mode 100644 dlls/d3d9-nine/d3d9-nine.spec
  create mode 100644 dlls/d3d9-nine/d3d9_main.c
@@ -41,7 +41,7 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index e88e245223..a5301131af 100644
+index 2eaa931835..66c36bc027 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -252,7 +252,7 @@ index e88e245223..a5301131af 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -3104,6 +3291,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -3105,6 +3292,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -482,10 +482,10 @@ index 0000000000..d1efdf4a71
 +}
 diff --git a/dlls/d3d9-nine/d3dadapter9.c b/dlls/d3d9-nine/d3dadapter9.c
 new file mode 100644
-index 0000000000..daa9524361
+index 0000000000..188eebf763
 --- /dev/null
 +++ b/dlls/d3d9-nine/d3dadapter9.c
-@@ -0,0 +1,853 @@
+@@ -0,0 +1,898 @@
 +/*
 + * Wine IDirect3D9 interface using ID3DAdapter9
 + *
@@ -884,23 +884,68 @@ index 0000000000..daa9524361
 +static UINT WINAPI d3dadapter9_GetAdapterModeCountEx(struct d3dadapter9 *This,
 +        UINT Adapter, const D3DDISPLAYMODEFILTER *pFilter)
 +{
-+    FIXME("(%p, %u, %p), stub!\n", This, Adapter, pFilter);
-+    return 1;
++    FIXME("(%p, %u, %p), half stub!\n", This, Adapter, pFilter);
++    return d3dadapter9_GetAdapterModeCount(This, Adapter, pFilter->Format);
 +}
 +
 +static HRESULT WINAPI d3dadapter9_EnumAdapterModesEx(struct d3dadapter9 *This,
 +        UINT Adapter, const D3DDISPLAYMODEFILTER *pFilter, UINT Mode,
 +        D3DDISPLAYMODEEX *pMode)
 +{
-+    FIXME("(%p, %u, %p, %u, %p), stub!\n", This, Adapter, pFilter, Mode, pMode);
-+    return D3DERR_INVALIDCALL;
++    HRESULT hr;
++
++    FIXME("(%p, %u, %p, %u, %p), half stub!\n", This, Adapter, pFilter, Mode, pMode);
++
++    if (Adapter >= d3dadapter9_GetAdapterCount(This))
++        return D3DERR_INVALIDCALL;
++
++    hr = d3dadapter9_CheckDeviceFormat(This, Adapter, D3DDEVTYPE_HAL,
++            pFilter->Format, D3DUSAGE_RENDERTARGET, D3DRTYPE_SURFACE, pFilter->Format);
++
++    if (FAILED(hr))
++    {
++        TRACE("DeviceFormat not available.\n");
++        return hr;
++    }
++
++    if (Mode >= ADAPTER_OUTPUT.nmodes)
++    {
++        WARN("Mode %u does not exist.\n", Mode);
++        return D3DERR_INVALIDCALL;
++    }
++
++    pMode->Size = ADAPTER_OUTPUT.modes[Mode].Size;
++    pMode->Width = ADAPTER_OUTPUT.modes[Mode].Width;
++    pMode->Height = ADAPTER_OUTPUT.modes[Mode].Height;
++    pMode->RefreshRate = ADAPTER_OUTPUT.modes[Mode].RefreshRate;
++    pMode->Format = ADAPTER_OUTPUT.modes[Mode].Format;
++    pMode->ScanLineOrdering = ADAPTER_OUTPUT.modes[Mode].ScanLineOrdering;
++
++    return D3D_OK;
 +}
 +
 +static HRESULT WINAPI d3dadapter9_GetAdapterDisplayModeEx(struct d3dadapter9 *This,
 +        UINT Adapter, D3DDISPLAYMODEEX *pMode, D3DDISPLAYROTATION *pRotation)
 +{
-+    FIXME("(%p, %u, %p, %p), stub!\n", This, Adapter, pMode, pRotation);
-+    return D3DERR_INVALIDCALL;
++    UINT Mode;
++
++    if (Adapter >= d3dadapter9_GetAdapterCount(This))
++        return D3DERR_INVALIDCALL;
++
++    if (pMode)
++    {
++        Mode = ADAPTER_OUTPUT.current;
++        pMode->Size = sizeof(D3DDISPLAYMODEEX);
++        pMode->Width = ADAPTER_OUTPUT.modes[Mode].Width;
++        pMode->Height = ADAPTER_OUTPUT.modes[Mode].Height;
++        pMode->RefreshRate = ADAPTER_OUTPUT.modes[Mode].RefreshRate;
++        pMode->Format = ADAPTER_OUTPUT.modes[Mode].Format;
++        pMode->ScanLineOrdering = ADAPTER_OUTPUT.modes[Mode].ScanLineOrdering;
++    }
++    if (pRotation)
++        *pRotation = ADAPTER_OUTPUT.rotation;
++
++    return D3D_OK;
 +}
 +
 +static HRESULT WINAPI DECLSPEC_HOTPATCH d3dadapter9_CreateDeviceEx(struct d3dadapter9 *This,
