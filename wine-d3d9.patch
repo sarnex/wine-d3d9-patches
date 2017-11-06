@@ -1,7 +1,7 @@
-From daaad5d507d78784d513886ff7c0a8a1911ffa28 Mon Sep 17 00:00:00 2001
+From f8574ff8a8c64fe6ab7a4399eb0d693e926f45d1 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sat, 21 Oct 2017 12:57:07 -0400
-Subject: [PATCH] Wine D3D9
+Date: Sun, 5 Nov 2017 22:31:07 -0500
+Subject: [PATCH 2/2] Wine D3D9
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
@@ -41,10 +41,10 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 2eaa931835..66c36bc027 100644
+index 7a8fcc4987..0f2a45f336 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -66,6 +66,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
+@@ -67,6 +67,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
  AC_ARG_WITH(opencl,    AS_HELP_STRING([--without-opencl],[do not use OpenCL]),
              [if test "x$withval" = "xno"; then ac_cv_header_CL_cl_h=no; ac_cv_header_OpenCL_opencl_h=no; fi])
  AC_ARG_WITH(opengl,    AS_HELP_STRING([--without-opengl],[do not use OpenGL]))
@@ -59,7 +59,7 @@ index 2eaa931835..66c36bc027 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -390,6 +398,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -391,6 +399,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -68,7 +68,7 @@ index 2eaa931835..66c36bc027 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1247,6 +1257,183 @@ OpenGL and Direct3D won't be supported.])
+@@ -1248,6 +1258,183 @@ OpenGL and Direct3D won't be supported.])
      WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
                       [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
  
@@ -252,7 +252,7 @@ index 2eaa931835..66c36bc027 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -3105,6 +3292,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
+@@ -3127,6 +3314,7 @@ WINE_CONFIG_DLL(d3d8,,[implib])
  WINE_CONFIG_TEST(dlls/d3d8/tests)
  WINE_CONFIG_DLL(d3d9,,[implib])
  WINE_CONFIG_TEST(dlls/d3d9/tests)
@@ -5781,5 +5781,5 @@ index 0000000000..15f26d491a
 +
 +#endif
 -- 
-2.14.2
+2.15.0
 
