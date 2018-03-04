@@ -1,7 +1,7 @@
-From bdd4da93462b54c97bb8b52a28744776ecb76b6c Mon Sep 17 00:00:00 2001
+From c6243cd8229cbbcb9824cfe1fe4be8229028f34b Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sat, 25 Nov 2017 17:30:26 -0500
-Subject: [PATCH] Staging helper
+Date: Sun, 4 Mar 2018 12:16:22 -0500
+Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
 ---
@@ -12,10 +12,10 @@ Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
  4 files changed, 33 insertions(+)
 
 diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
-index 3668d73643..24e8a6f109 100644
+index d05d7b321e..7945d2a599 100644
 --- a/dlls/ntdll/loadorder.c
 +++ b/dlls/ntdll/loadorder.c
-@@ -633,8 +633,10 @@ WCHAR* get_redirect( const WCHAR *app_name, const WCHAR *path, BYTE *buffer, ULO
+@@ -629,8 +629,10 @@ WCHAR* get_redirect( const WCHAR *app_name, const WCHAR *path, BYTE *buffer, ULO
          goto done;
  
      /* then module basename without '*' (only if explicit path) */
@@ -119,5 +119,5 @@ index 314e9858ea..596dc27447 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.15.0
+2.16.2
 
