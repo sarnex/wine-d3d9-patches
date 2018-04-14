@@ -1,6 +1,6 @@
-From 390a5a66bb1fd749885fbea3d3b6ab2cd9ed69f6 Mon Sep 17 00:00:00 2001
+From e85e98ed34ed9009e7f380955da0e4a5d82e17ac Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sat, 31 Mar 2018 10:03:56 -0400
+Date: Sat, 14 Apr 2018 11:56:11 -0400
 Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
@@ -39,10 +39,10 @@ index b94e773b60..028dbb730b 100644
  /* About tab */
  #define IDC_ABT_OWNER                8432
 diff --git a/programs/winecfg/staging.c b/programs/winecfg/staging.c
-index a96bdcaab4..7eec5e9608 100644
+index df9bf0f1ad..e010be1c73 100644
 --- a/programs/winecfg/staging.c
 +++ b/programs/winecfg/staging.c
-@@ -122,6 +122,23 @@ static void gtk3_set(BOOL status)
+@@ -121,6 +121,23 @@ static void gtk3_set(BOOL status)
  #endif
  }
  
@@ -66,7 +66,7 @@ index a96bdcaab4..7eec5e9608 100644
  static void load_staging_settings(HWND dialog)
  {
      CheckDlgButton(dialog, IDC_ENABLE_CSMT, csmt_get() ? BST_CHECKED : BST_UNCHECKED);
-@@ -129,6 +146,7 @@ static void load_staging_settings(HWND dialog)
+@@ -128,6 +145,7 @@ static void load_staging_settings(HWND dialog)
      CheckDlgButton(dialog, IDC_ENABLE_EAX, eax_get() ? BST_CHECKED : BST_UNCHECKED);
      CheckDlgButton(dialog, IDC_ENABLE_HIDEWINE, hidewine_get() ? BST_CHECKED : BST_UNCHECKED);
      CheckDlgButton(dialog, IDC_ENABLE_GTK3, gtk3_get() ? BST_CHECKED : BST_UNCHECKED);
@@ -74,7 +74,7 @@ index a96bdcaab4..7eec5e9608 100644
  
  #ifndef HAVE_VAAPI
      disable(IDC_ENABLE_VAAPI);
-@@ -136,6 +154,9 @@ static void load_staging_settings(HWND dialog)
+@@ -135,6 +153,9 @@ static void load_staging_settings(HWND dialog)
  #ifndef HAVE_GTK3
      disable(IDC_ENABLE_GTK3);
  #endif
@@ -84,7 +84,7 @@ index a96bdcaab4..7eec5e9608 100644
  }
  
  INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-@@ -163,6 +184,8 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
+@@ -162,6 +183,8 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
          {
          case IDC_ENABLE_CSMT:
              csmt_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_CSMT) == BST_CHECKED);
@@ -93,7 +93,7 @@ index a96bdcaab4..7eec5e9608 100644
              SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
              return TRUE;
          case IDC_ENABLE_VAAPI:
-@@ -181,6 +204,12 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
+@@ -180,6 +203,12 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
              gtk3_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_GTK3) == BST_CHECKED);
              SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
              return TRUE;
@@ -107,7 +107,7 @@ index a96bdcaab4..7eec5e9608 100644
          break;
      }
 diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
-index 314e9858ea..596dc27447 100644
+index f838a04a4e..7003bded4a 100644
 --- a/programs/winecfg/winecfg.rc
 +++ b/programs/winecfg/winecfg.rc
 @@ -320,6 +320,7 @@ BEGIN
@@ -119,5 +119,5 @@ index 314e9858ea..596dc27447 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.16.3
+2.17.0
 
