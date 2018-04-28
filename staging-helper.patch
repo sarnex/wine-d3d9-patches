@@ -1,9 +1,9 @@
-From e85e98ed34ed9009e7f380955da0e4a5d82e17ac Mon Sep 17 00:00:00 2001
-From: Nick Sarnie <commendsarnex@gmail.com>
-Date: Sat, 14 Apr 2018 11:56:11 -0400
+From a6e9afe475e48e0bcb539d2cb8a5b8d83e16067a Mon Sep 17 00:00:00 2001
+From: Nick Sarnie <sarnex@gentoo.org>
+Date: Sat, 28 Apr 2018 18:35:19 -0400
 Subject: [PATCH] Staging Helper
 
-Signed-off-by: Nick Sarnie <commendsarnex@gmail.com>
+Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
 ---
  dlls/ntdll/loadorder.c      |  2 ++
  programs/winecfg/resource.h |  1 +
