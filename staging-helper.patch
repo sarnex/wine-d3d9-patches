@@ -84,23 +84,12 @@ index df9bf0f1ad..e010be1c73 100644
  }
  
  INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-@@ -162,6 +183,8 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
-         {
-         case IDC_ENABLE_CSMT:
-             csmt_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_CSMT) == BST_CHECKED);
-+            nine_set(FALSE);
-+            CheckDlgButton(hDlg, IDC_ENABLE_NATIVE_D3D9, BST_UNCHECKED);
-             SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
-             return TRUE;
-         case IDC_ENABLE_VAAPI:
 @@ -180,6 +203,12 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
              gtk3_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_GTK3) == BST_CHECKED);
              SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
              return TRUE;
 +        case IDC_ENABLE_NATIVE_D3D9:
 +            nine_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_NATIVE_D3D9) == BST_CHECKED);
-+            csmt_set(FALSE);
-+            CheckDlgButton(hDlg, IDC_ENABLE_CSMT, BST_UNCHECKED);
 +            SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
 +            return TRUE;
          }
