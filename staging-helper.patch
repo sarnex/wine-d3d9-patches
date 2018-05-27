@@ -1,15 +1,15 @@
-From 1f16f6287fcec946f1ea8da6fa405ef7473a2621 Mon Sep 17 00:00:00 2001
+From 43d5c97f93ededd80f80c04e25a8bfee3c6bb2be Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Sat, 26 May 2018 19:34:45 -0400
+Date: Sun, 27 May 2018 09:18:19 -0400
 Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
 ---
  dlls/ntdll/loadorder.c      |  2 ++
  programs/winecfg/resource.h |  1 +
- programs/winecfg/staging.c  | 29 +++++++++++++++++++++++++++++
+ programs/winecfg/staging.c  | 25 +++++++++++++++++++++++++
  programs/winecfg/winecfg.rc |  1 +
- 4 files changed, 33 insertions(+)
+ 4 files changed, 29 insertions(+)
 
 diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
 index d05d7b321e..7945d2a599 100644
@@ -39,7 +39,7 @@ index b94e773b60..028dbb730b 100644
  /* About tab */
  #define IDC_ABT_OWNER                8432
 diff --git a/programs/winecfg/staging.c b/programs/winecfg/staging.c
-index df9bf0f1ad..e010be1c73 100644
+index df9bf0f1ad..cccfa02957 100644
 --- a/programs/winecfg/staging.c
 +++ b/programs/winecfg/staging.c
 @@ -121,6 +121,23 @@ static void gtk3_set(BOOL status)
@@ -84,7 +84,7 @@ index df9bf0f1ad..e010be1c73 100644
  }
  
  INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-@@ -180,6 +203,12 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
+@@ -180,6 +201,10 @@ INT_PTR CALLBACK StagingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
              gtk3_set(IsDlgButtonChecked(hDlg, IDC_ENABLE_GTK3) == BST_CHECKED);
              SendMessageW(GetParent(hDlg), PSM_CHANGED, 0, 0);
              return TRUE;
