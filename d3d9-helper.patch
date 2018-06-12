@@ -1,6 +1,6 @@
-From 95866529a7bec4f5f4a142c46c981108972e095a Mon Sep 17 00:00:00 2001
+From 801df94f3ef6e792dae55916a1fd796fec221232 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Sat, 26 May 2018 19:35:46 -0400
+Date: Mon, 11 Jun 2018 21:09:04 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -1025,5 +1025,5 @@ index 5908b491d4..a2da7e6b3a 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.17.0
+2.17.1
 
