@@ -1,6 +1,6 @@
-From cdbf59b3087cdc2addbff02c0c0f0ef333644a48 Mon Sep 17 00:00:00 2001
+From 1f32b80d6f358cd6b34f6f2fb57049ff189f4999 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Fri, 13 Jul 2018 22:25:21 -0400
+Date: Sat, 21 Jul 2018 12:42:19 -0400
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -41,7 +41,7 @@ Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 539abd225a..089e5acc37 100644
+index 0b89608ff0..ba644b28bb 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -70,6 +70,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
@@ -68,7 +68,7 @@ index 539abd225a..089e5acc37 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1269,6 +1279,183 @@ OpenGL and Direct3D won't be supported.])
+@@ -1276,6 +1286,183 @@ OpenGL and Direct3D won't be supported.])
      WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
                       [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
  
@@ -252,7 +252,7 @@ index 539abd225a..089e5acc37 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -3248,6 +3435,7 @@ WINE_CONFIG_MAKEFILE(dlls/d3d8)
+@@ -3259,6 +3446,7 @@ WINE_CONFIG_MAKEFILE(dlls/d3d8)
  WINE_CONFIG_MAKEFILE(dlls/d3d8/tests)
  WINE_CONFIG_MAKEFILE(dlls/d3d9)
  WINE_CONFIG_MAKEFILE(dlls/d3d9/tests)
