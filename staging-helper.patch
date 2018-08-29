@@ -1,6 +1,6 @@
-From c516fcc03ec4129b616f549adf202eed6bb146ac Mon Sep 17 00:00:00 2001
+From 12c9e41b9a6d0beaae9e84f930cdf3336d3a6b52 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Sat, 21 Jul 2018 12:42:00 -0400
+Date: Wed, 29 Aug 2018 18:42:05 -0400
 Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -27,10 +27,10 @@ index d05d7b321e..7945d2a599 100644
      /* and last the hard-coded default */
      ret = NULL;
 diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
-index b94e773b60..028dbb730b 100644
+index 96f2429090..06f41f5c70 100644
 --- a/programs/winecfg/resource.h
 +++ b/programs/winecfg/resource.h
-@@ -218,6 +218,7 @@
+@@ -219,6 +219,7 @@
  #define IDC_ENABLE_EAX                  9003
  #define IDC_ENABLE_HIDEWINE             9004
  #define IDC_ENABLE_GTK3                 9005
@@ -96,10 +96,10 @@ index df9bf0f1ad..cccfa02957 100644
          break;
      }
 diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
-index f838a04a4e..7003bded4a 100644
+index 33f2642ed6..ad9c9d894f 100644
 --- a/programs/winecfg/winecfg.rc
 +++ b/programs/winecfg/winecfg.rc
-@@ -320,6 +320,7 @@ BEGIN
+@@ -324,6 +324,7 @@ BEGIN
      CONTROL     "Enable Environmental Audio E&xtensions (EAX)",IDC_ENABLE_EAX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,70,230,8
      CONTROL     "&Hide Wine version from applications",IDC_ENABLE_HIDEWINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,85,230,8
      CONTROL     "Enable &GTK3 Theming",IDC_ENABLE_GTK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,100,230,8

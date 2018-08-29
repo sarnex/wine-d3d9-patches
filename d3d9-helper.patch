@@ -1,6 +1,6 @@
-From 94eeff5b326ee642fef8da60d0b6a9e49f298dbc Mon Sep 17 00:00:00 2001
+From 1a9d32c32df0fb9fed2a3daff1f1415ee53d810a Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Sat, 21 Jul 2018 12:42:55 -0400
+Date: Wed, 29 Aug 2018 18:44:09 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -18,7 +18,7 @@ Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
  create mode 100644 programs/winecfg/staging.c
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
-index df206e848d..d208c124d3 100644
+index 8d18af8b86..06c1507f5c 100644
 --- a/dlls/ntdll/loader.c
 +++ b/dlls/ntdll/loader.c
 @@ -110,6 +110,7 @@ struct builtin_load_info
@@ -859,7 +859,7 @@ index b8a85fe717..de209a925c 100644
       * Fill out the (General) PROPSHEETPAGE data structure 
       * for the property sheet
 diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
-index 0c0b038ff9..f0e370ecd6 100644
+index 2760e92c00..0584422ab5 100644
 --- a/programs/winecfg/resource.h
 +++ b/programs/winecfg/resource.h
 @@ -45,6 +45,7 @@
@@ -878,7 +878,7 @@ index 0c0b038ff9..f0e370ecd6 100644
  #define IDC_WINVER                      1012
  #define IDC_DESKTOP_WIDTH               1023
  #define IDC_DESKTOP_HEIGHT              1024
-@@ -218,3 +220,6 @@
+@@ -219,3 +221,6 @@
  #define IDC_ABT_TITLE_TEXT           8436
  #define IDC_ABT_WEB_LINK             8437
  #define IDC_ABT_LICENSE_TEXT         8438
@@ -997,7 +997,7 @@ index 110856a536..a94947439c 100644
  
  /* Drive management  */
 diff --git a/programs/winecfg/winecfg.rc b/programs/winecfg/winecfg.rc
-index 5908b491d4..a2da7e6b3a 100644
+index 33f54d43b2..d12522e758 100644
 --- a/programs/winecfg/winecfg.rc
 +++ b/programs/winecfg/winecfg.rc
 @@ -39,6 +39,7 @@ BEGIN
@@ -1008,7 +1008,7 @@ index 5908b491d4..a2da7e6b3a 100644
      IDS_TAB_ABOUT           "About"
      IDS_WINECFG_TITLE       "Wine configuration"
      IDS_WINECFG_TITLE_APP   "Wine configuration for %s"
-@@ -308,6 +309,15 @@ BEGIN
+@@ -312,6 +313,15 @@ BEGIN
      PUSHBUTTON      "B&rowse...",IDC_BROWSE_SFPATH,195,195,50,13,WS_DISABLED
  END
  
