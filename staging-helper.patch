@@ -1,6 +1,6 @@
-From 12c9e41b9a6d0beaae9e84f930cdf3336d3a6b52 Mon Sep 17 00:00:00 2001
+From 06b73adbbef2336142b48c4497221811cbe6789f Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Wed, 29 Aug 2018 18:42:05 -0400
+Date: Sun, 2 Sep 2018 10:28:24 -0400
 Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>

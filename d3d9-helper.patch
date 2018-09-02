@@ -1,6 +1,6 @@
-From 1a9d32c32df0fb9fed2a3daff1f1415ee53d810a Mon Sep 17 00:00:00 2001
+From 58190cd8c0e5e9cefe55f3a74c5c2fe223eea3eb Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Wed, 29 Aug 2018 18:44:09 -0400
+Date: Sun, 2 Sep 2018 10:29:11 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -18,7 +18,7 @@ Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
  create mode 100644 programs/winecfg/staging.c
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
-index 8d18af8b86..06c1507f5c 100644
+index 26b2431047..de57f5428b 100644
 --- a/dlls/ntdll/loader.c
 +++ b/dlls/ntdll/loader.c
 @@ -110,6 +110,7 @@ struct builtin_load_info
