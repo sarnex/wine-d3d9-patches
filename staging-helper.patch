@@ -1,7 +1,7 @@
-From 260fcdb64a5f9f990efc70a7dd53041ad8fd6787 Mon Sep 17 00:00:00 2001
+From 796cf5c8a22d92c1fc84c9418e9479d71f7ad787 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Sun, 30 Sep 2018 14:51:06 -0400
-Subject: [PATCH] Staging helper
+Date: Sat, 13 Oct 2018 11:38:48 -0400
+Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
 ---
@@ -108,5 +108,5 @@ index 33f2642ed6..ad9c9d894f 100644
  
  LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 -- 
-2.19.0
+2.19.1
 

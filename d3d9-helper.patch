@@ -1,6 +1,6 @@
-From cd3f552bf4fcb8c66fedc38ae841878b7a2f39f2 Mon Sep 17 00:00:00 2001
+From 08fe179f01e25a1ca594b9719529d3d5c47cc2c4 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Sun, 30 Sep 2018 14:52:30 -0400
+Date: Sat, 13 Oct 2018 11:40:07 -0400
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -18,7 +18,7 @@ Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
  create mode 100644 programs/winecfg/staging.c
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
-index a66a708a7b..cd7592832f 100644
+index 31168c0972..741205757a 100644
 --- a/dlls/ntdll/loader.c
 +++ b/dlls/ntdll/loader.c
 @@ -110,6 +110,7 @@ struct builtin_load_info
@@ -805,10 +805,10 @@ index c6c0245931..c247a50380 100644
 +    return ret;
 +}
 diff --git a/dlls/ntdll/ntdll_misc.h b/dlls/ntdll/ntdll_misc.h
-index 85ba707b04..d02430649b 100644
+index f4de3cf848..1e1990a0fb 100644
 --- a/dlls/ntdll/ntdll_misc.h
 +++ b/dlls/ntdll/ntdll_misc.h
-@@ -214,6 +214,7 @@ enum loadorder
+@@ -213,6 +213,7 @@ enum loadorder
  };
  
  extern enum loadorder get_load_order( const WCHAR *app_name, const WCHAR *path ) DECLSPEC_HIDDEN;
@@ -1025,5 +1025,5 @@ index 33f54d43b2..d12522e758 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.19.0
+2.19.1
 
