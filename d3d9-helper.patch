@@ -1,6 +1,6 @@
-From b2754287c16240b4d46da8ef89df9f471ad31ac0 Mon Sep 17 00:00:00 2001
+From 349f6763a547857272707e32819fa8bbb75f4e6c Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Sun, 11 Nov 2018 12:24:29 -0500
+Date: Sun, 25 Nov 2018 11:44:29 -0500
 Subject: [PATCH] D3D9 Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -18,7 +18,7 @@ Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
  create mode 100644 programs/winecfg/staging.c
 
 diff --git a/dlls/ntdll/loader.c b/dlls/ntdll/loader.c
-index c5e8d0d7c1..4aa342ac74 100644
+index b00a5f889f..ea26f10d5f 100644
 --- a/dlls/ntdll/loader.c
 +++ b/dlls/ntdll/loader.c
 @@ -110,6 +110,7 @@ struct builtin_load_info
@@ -407,7 +407,7 @@ index c5e8d0d7c1..4aa342ac74 100644
          if (handle) NtClose( handle );
          if (filename != buffer) RtlFreeHeap( GetProcessHeap(), 0, filename );
          if (status != STATUS_BUFFER_TOO_SMALL) break;
-@@ -3560,7 +3707,7 @@ void __wine_process_init(void)
+@@ -3574,7 +3721,7 @@ void __wine_process_init(void)
      /* setup the load callback and create ntdll modref */
      wine_dll_set_callback( load_builtin_callback );
  
@@ -1025,5 +1025,5 @@ index 33f54d43b2..d12522e758 100644
  
  /* @makedep: winecfg.ico */
 -- 
-2.19.1
+2.19.2
 
