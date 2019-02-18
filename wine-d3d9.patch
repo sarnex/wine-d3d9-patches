@@ -1,6 +1,6 @@
-From dfe9f5d81dc24995568d4e6edb63d007032e2bec Mon Sep 17 00:00:00 2001
+From 3b06e430d1a1da2b50de4d8757dc4d5ef429dbd2 Mon Sep 17 00:00:00 2001
 From: Nick Sarnie <sarnex@gentoo.org>
-Date: Wed, 23 Jan 2019 21:23:04 -0500
+Date: Mon, 18 Feb 2019 10:01:15 -0500
 Subject: [PATCH] Wine D3D9
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
@@ -41,10 +41,10 @@ Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
  create mode 100644 dlls/d3d9-nine/wndproc.h
 
 diff --git a/configure.ac b/configure.ac
-index 972d44eb86..5f668d44c9 100644
+index 1b425d22a2..ded3ac4d91 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -70,6 +70,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
+@@ -68,6 +68,14 @@ AC_ARG_WITH(openal,    AS_HELP_STRING([--without-openal],[do not use OpenAL]),
  AC_ARG_WITH(opencl,    AS_HELP_STRING([--without-opencl],[do not use OpenCL]),
              [if test "x$withval" = "xno"; then ac_cv_header_CL_cl_h=no; ac_cv_header_OpenCL_opencl_h=no; fi])
  AC_ARG_WITH(opengl,    AS_HELP_STRING([--without-opengl],[do not use OpenGL]))
@@ -59,7 +59,7 @@ index 972d44eb86..5f668d44c9 100644
  AC_ARG_WITH(osmesa,     AS_HELP_STRING([--without-osmesa],[do not use the OSMesa library]))
  AC_ARG_WITH(oss,       AS_HELP_STRING([--without-oss],[do not use the OSS sound support]))
  AC_ARG_WITH(pcap,      AS_HELP_STRING([--without-pcap],[do not use the Packet Capture library]),
-@@ -413,6 +421,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
+@@ -402,6 +410,8 @@ AC_CHECK_LIB(ossaudio,_oss_ioctl)
  
  AC_SUBST(OPENGL_LIBS,"")
  
@@ -68,9 +68,9 @@ index 972d44eb86..5f668d44c9 100644
  dnl **** Check for header files ****
  
  AC_SYS_LARGEFILE()
-@@ -1280,6 +1290,183 @@ OpenGL and Direct3D won't be supported.])
-     WINE_NOTICE_WITH(va,[test "x$ac_cv_lib_soname_va" = "x" -o "x$ac_cv_lib_soname_va_x11" = "x" -o "x$ac_cv_lib_soname_va_drm" = "x"],
-                      [libva ${notice_platform}development files not found, GPU video acceleration won't be supported.])
+@@ -1240,6 +1250,183 @@ This probably prevents linking to OpenGL. Try deleting the file and restarting c
+     WINE_WARNING_WITH(opengl,[test -n "$opengl_msg"],[$opengl_msg
+ OpenGL and Direct3D won't be supported.])
  
 +    dnl Check for d3d9-nine support
 +    if test "x$with_d3d9_nine" = "xauto" && (test "x$with_d3d9_nine_module" = "xauto" || test "x$with_d3d9_nine_headers_path" = "xauto")
@@ -252,7 +252,7 @@ index 972d44eb86..5f668d44c9 100644
      CPPFLAGS="$ac_save_CPPFLAGS"
  else
      X_CFLAGS=""
-@@ -3262,6 +3449,7 @@ WINE_CONFIG_MAKEFILE(dlls/d3d8)
+@@ -3161,6 +3348,7 @@ WINE_CONFIG_MAKEFILE(dlls/d3d8)
  WINE_CONFIG_MAKEFILE(dlls/d3d8/tests)
  WINE_CONFIG_MAKEFILE(dlls/d3d9)
  WINE_CONFIG_MAKEFILE(dlls/d3d9/tests)
