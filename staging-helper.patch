@@ -5,27 +5,11 @@ Subject: [PATCH] Staging Helper
 
 Signed-off-by: Nick Sarnie <sarnex@gentoo.org>
 ---
- dlls/ntdll/loadorder.c      |  2 ++
  programs/winecfg/resource.h |  1 +
  programs/winecfg/staging.c  | 25 +++++++++++++++++++++++++
  programs/winecfg/winecfg.rc |  1 +
- 4 files changed, 29 insertions(+)
+ 3 files changed, 27 insertions(+)
 
-diff --git a/dlls/ntdll/loadorder.c b/dlls/ntdll/loadorder.c
-index d05d7b321e..7945d2a599 100644
---- a/dlls/ntdll/loadorder.c
-+++ b/dlls/ntdll/loadorder.c
-@@ -629,8 +629,10 @@ WCHAR* get_redirect( const WCHAR *app_name, const WCHAR *path, BYTE *buffer, ULO
-         goto done;
- 
-     /* then module basename without '*' (only if explicit path) */
-+    /*
-     if (basename != module+1 && (ret = get_redirect_value( std_key, app_key, basename, buffer, size )))
-         goto done;
-+    */
- 
-     /* and last the hard-coded default */
-     ret = NULL;
 diff --git a/programs/winecfg/resource.h b/programs/winecfg/resource.h
 index 96f2429090..06f41f5c70 100644
 --- a/programs/winecfg/resource.h
